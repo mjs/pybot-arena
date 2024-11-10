@@ -19,6 +19,8 @@
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             python311Packages.pygame
+            python311Packages.numpy
+            python311Packages.pillow
           ];
         };
       }
