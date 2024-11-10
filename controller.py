@@ -3,7 +3,6 @@ import pycollision
 import assets
 from Tank import Bullet, Enemy
 from random import choice
-import sounds
 
 
 class Controller:
@@ -39,7 +38,6 @@ class Controller:
     def createBullet(self, tank_object, normal_pos, fire_pos, angle, radius, speed):
         bullet = Bullet(self.screen, tank_object, normal_pos, fire_pos, angle, radius, speed)
         self.bullets.add(bullet)
-        sounds.shoot_sound.play()
 
     def getPlayerPos(self):
         return self.player.pos()
