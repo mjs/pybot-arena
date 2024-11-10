@@ -13,14 +13,6 @@ def checkWallCollision(points: Tuple[int, int, int, int]):
                wall_coll5.rect_collide(points)[0], wall_coll6.rect_collide(points)[0]))
 
 
-def update_spawn_pos():
-    global spawn_lst
-    bg_rect = background.getPos()
-    pre_bg = background.previousPos()
-    bg_x, bg_y = bg_rect[0] - pre_bg[0], bg_rect[1] - pre_bg[1]
-    spawn_lst = [(bg_x + x[0], bg_y + x[1]) for x in spawn_lst]
-
-
 def main():
 
     global running, max_enemy
@@ -52,7 +44,6 @@ def main():
         if not game_over:
             key_press = pygame.key.get_pressed()
 
-            background.resetprevPos()
             # background.keyEvent(key_press, player.pos())
 
             player.keyEvent(key_press)
@@ -70,8 +61,6 @@ def main():
 
             if checkWallCollision(player.getBbox()):
                 player.resetPreviousPos()
-                background.resetPreviousPos()
-                background.resetprevPos()
 
             controller.setSpawnlst(spawn_lst)
 
@@ -81,9 +70,6 @@ def main():
                 game_over = True
                 score = controller.getScore()
                 controller.reset()
-
-            update_spawn_pos()
-            controller.setBgPos(background.getPos(), background.previousPos())
 
         background.update()
         controller.update()
