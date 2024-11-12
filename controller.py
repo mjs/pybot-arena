@@ -1,7 +1,7 @@
 import pycollision
 
 import assets
-from Tank import Bullet, Enemy
+from entities import Bullet, Enemy
 from random import choice
 
 

@@ -1,7 +1,7 @@
 from typing import Tuple
 
 import pygame
-import Tank as pl
+import entities
 from controller import Controller
 import background as bg
 import assets
@@ -100,13 +100,13 @@ if __name__ == "__main__":
 
     running = True
 
-    max_enemy = 1
+    max_enemy = 3
     lives = 3
 
     life_image = pygame.image.load(assets.LIFE)
 
     controller = Controller(screen, lives=lives)
-    player = pl.Player(assets.PLAYER_TANK, screen, (250, 200), controller=controller, speed=2, fire_speed=2,
+    player = entities.Player(assets.PLAYER_TANK, screen, (250, 200), controller=controller, speed=2, fire_speed=2,
                        fire_delay=100, fire_radius=250)
 
     controller.setPlayer(player)
