@@ -19,10 +19,8 @@ def main():
 
     time = 0
     game_over = False
-    score = 0
 
     time_rect = pygame.Rect(50, 50, 100, 100)
-    score_rect = pygame.Rect(50, 50, 100, 100)
 
     while running:
         screen.fill((0, 0, 0))
@@ -38,18 +36,10 @@ def main():
             if controller.getEnemyCount() < max_enemy or (time + 1) % 8500 == 0:
                 controller.spawnEnemy()
 
-            if score < controller.getScore():
-                score = controller.getScore()
-
-            if (score+1) % 25 == 0:
-                max_enemy += 1
-                score += 1
-
             time += 1
 
             # if controller.getLives() == 0:
             #     game_over = True
-            #     score = controller.getScore()
             #     controller.reset()
 
         background.update()
@@ -57,12 +47,9 @@ def main():
 
         time_rect = screen.blit(score_font.render(f"{time}", True, (255, 255, 255)),
                                 (screen.get_width()-time_rect.width-100, 20))
-        score_rect = screen.blit(score_font.render(f"Kills: {controller.getScore()}", True, (255, 255, 255)),
-                                 (screen.get_width()-score_rect.width-100, 50))
 
         if game_over:
             screen.blit(game_over_font.render("GAME OVER", True, (255, 255, 255)), (300, 50))
-            screen.blit(game_over_font.render(f"SCORE: {score}", True, (255, 255, 255)), (350, 200))
             screen.blit(game_over_font.render("Click anywhere to restart", True, (255, 255, 255)), (200, 300))
 
         pygame.display.update()
