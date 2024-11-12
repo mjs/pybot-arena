@@ -25,35 +25,27 @@ class Background:
 
 class BackgroundWall:
 
-    def __init__(self, img: str, screen, bg_rect, pos=(0, 0), split=(5, 5)):
-        self.bg_image = pygame.image.load(img).convert_alpha()
-        self.bg_x, self.bg_y = pos
-        self.orgPos = list(pos)
+    def __init__(self, img: str, screen, pos=(0, 0), split=(5, 5)):
+        self.img = pygame.image.load(img).convert_alpha()
+        self.x, self.y = pos
         self.screen = screen
-
-        self.bg_rect = bg_rect
 
         self._collision = False
 
         self.collision = Collision(img, split, wall_collision=True, wall_padding=(1, 1, 1, 1))
 
     def setPos(self, x, y):
-        self.orgPos = list((x, y))
-        self.bg_x, self.bg_y = x, y
-        self.collision.setSpritePos(self.bg_x, self.bg_y)
+        self.x, self.y = x, y
+        self.collision.setSpritePos(self.x, self.y)
 
-    def update(self, bgpos: Tuple[float, float]):
-        self.bg_x = self.orgPos[0] + bgpos[0]
-        self.bg_y = self.orgPos[1] + bgpos[1]
-        self.screen.blit(self.bg_image, (self.bg_x, self.bg_y))
-
-        self.collision.setSpritePos(self.bg_x, self.bg_y)
+    def update(self):
+        self.screen.blit(self.img, (self.x, self.y))
 
     def getCollisionObject(self):
         return self.collision
 
     def get_rect(self) -> pygame.Rect:
-        return self.bg_image.get_rect()
+        return self.img.get_rect()
 
     def getPos(self):
-        return self.bg_x, self.bg_y
+        return self.x, self.y

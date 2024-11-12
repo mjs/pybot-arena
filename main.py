@@ -93,35 +93,34 @@ if __name__ == "__main__":
 
     split = (20, 20)
 
-    backg_wall = bg.BackgroundWall(assets.BACKGROUND_WALL1, screen, bg_rect, (0, 0), split=split)
+    backg_wall = bg.BackgroundWall(assets.BACKGROUND_WALL1, screen, (0, 0), split=split)
     wall_coll1 = backg_wall.getCollisionObject()
 
-    backg_wall2 = bg.BackgroundWall(assets.BACKGROUND_WALL2, screen, bg_rect, split=split)
+    backg_wall2 = bg.BackgroundWall(assets.BACKGROUND_WALL2, screen, split=split)
     rect = backg_wall2.get_rect()
     backg_wall2.setPos(bg_rect.width - rect.width, 0)
     wall_coll2 = backg_wall2.getCollisionObject()
 
-    backg_wall3 = bg.BackgroundWall(assets.BACKGROUND_WALL3, screen, bg_rect, split=split)
+    backg_wall3 = bg.BackgroundWall(assets.BACKGROUND_WALL3, screen, split=split)
     rect = backg_wall3.get_rect()
     backg_wall3.setPos(0, bg_rect.height - rect.height)
     wall_coll3 = backg_wall3.getCollisionObject()
 
-    backg_wall4 = bg.BackgroundWall(assets.BACKGROUND_WALL4, screen, bg_rect, split=split)
+    backg_wall4 = bg.BackgroundWall(assets.BACKGROUND_WALL4, screen, split=split)
     rect = backg_wall4.get_rect()
     backg_wall4.setPos(bg_rect.width - rect.width, bg_rect.height - rect.height)
     wall_coll4 = backg_wall4.getCollisionObject()
 
-    backg_wall5 = bg.BackgroundWall(assets.BACKGROUND_WALL5, screen, bg_rect, split=split)
+    backg_wall5 = bg.BackgroundWall(assets.BACKGROUND_WALL5, screen, split=split)
     backg_wall5.setPos(400, 400)
     wall_coll5 = backg_wall5.getCollisionObject()
 
-    backg_wall6 = bg.BackgroundWall(assets.BACKGROUND_WALL6, screen, bg_rect, split=split)
+    backg_wall6 = bg.BackgroundWall(assets.BACKGROUND_WALL6, screen, split=split)
     backg_wall6.setPos(500, 150)
     wall_coll6 = backg_wall6.getCollisionObject()
 
     for wall in [(backg_wall, wall_coll1), (backg_wall2, wall_coll2), (backg_wall3, wall_coll3),
                  (backg_wall4, wall_coll4), (backg_wall5, wall_coll5), (backg_wall6, wall_coll6)]:
-
         controller.addObstacle(*wall)
 
     spawn_lst = [(650, 120), (250, 450), (650, 450)]

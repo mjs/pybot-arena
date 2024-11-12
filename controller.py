@@ -24,10 +24,6 @@ class Controller:
         self.lives = lives
         self.max_lives = lives
 
-    def setBgPos(self, bgpos, prev_pos):
-        self.bg_x, self.bg_y = bgpos
-        self.prev_bg_x, self.prev_bg_y = prev_pos
-
     def addObstacle(self, obstacle, collidObj):
         self.obstacles.add((obstacle, collidObj))
 
@@ -36,15 +32,12 @@ class Controller:
         self.bullets.add(bullet)
 
     def updateTanks(self):
-        bg_x, bg_y = self.bg_x - self.prev_bg_x, self.bg_y - self.prev_bg_y
-
         for tank in self.enemies:
-            tank.setBgPos((bg_x, bg_y)) # XXX not necessary?
             tank.update()
 
     def updateObstacles(self):
         for obs, _ in self.obstacles:
-            obs.update((self.bg_x, self.bg_y))
+            obs.update()
 
     def update_bullets(self):
 
