@@ -1,11 +1,10 @@
-import pycollision
-
 import assets
 from entities import Bullet, Enemy
 from random import choice
 
 
 class Controller:
+    bots = set()
     bullets = set()
     enemies = set()
     screen = None
@@ -23,11 +22,19 @@ class Controller:
     def addObstacle(self, obstacle, collidObj):
         self.obstacles.add((obstacle, collidObj))
 
+    def addBot(self, bot):
+        self.bots.add(bot)
+
     def createBullet(self, tank_object, normal_pos, fire_pos, angle, radius, speed):
         bullet = Bullet(self.screen, tank_object, normal_pos, fire_pos, angle, radius, speed)
         self.bullets.add(bullet)
 
-    def updateTanks(self):
+    def updateBots(self):
+        for bot in self.bots:
+            bot.update()
+
+    #XXX to go
+    def updateEnemies(self):
         for tank in self.enemies:
             tank.update()
 
@@ -36,7 +43,6 @@ class Controller:
             obs.update()
 
     def update_bullets(self):
-
         bg_x, bg_y = self.bg_x - self.prev_bg_x, self.bg_y - self.prev_bg_y
 
         for bullet in self.bullets.copy():
@@ -46,12 +52,24 @@ class Controller:
                 self.bullets.remove(bullet)
 
     def checkCollision(self):
-        """ checks for collision between tank, bullets and obstacles """
         for bullet in self.bullets.copy():
             for _, collid in self.obstacles:
                 if collid.rect_collide(bullet.getBbox())[0]:
                     self.bullets.remove(bullet)
                     break
+
+        # XXX optimise
+        for bot in self.bots:
+            collid_count = 0
+            for _, collid in self.obstacles:
+                if collid.rect_collide(bot.getBbox())[0] or \
+                        not (100 <= bot.pos_x <= 800 and 100 <= bot.pos_y <= 600):
+                    collid_count += 1
+
+            if collid_count > 0:
+                bot.resetPreviousPos()
+                bot.speed = 0
+                bot.setCollision(True)
 
         for enemy in self.enemies:
             collid_count = 0
@@ -91,14 +109,14 @@ class Controller:
     def update(self):
         self.update_bullets()
         self.updateObstacles()
-        self.updateTanks()
+        self.updateBots()
+        self.updateEnemies()
         self.checkCollision()
 
     def setSpawnlst(self, spawnlst):
         self.spawn_lst = spawnlst
 
     def spawnEnemy(self):
-
         pos = choice(self.spawn_lst)
         enemy = Enemy(follow_radius=200, pos=pos, screen=self.screen, img_path=assets.ENEMY_TANK,
                       controller=self, speed=0.4, fire_speed=0.5,
@@ -106,5 +124,6 @@ class Controller:
         self.enemies.add(enemy)
 
     def reset(self):
+        self.bots = set()
         self.enemies = set()
         self.bullets = set()

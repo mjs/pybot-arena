@@ -3,6 +3,7 @@ import random
 import pygame
 import math
 from typing import Tuple
+from algo import CurrentState
 import assets
 
 
@@ -105,6 +106,64 @@ class Tank:
         self.pos_x, self.pos_y = pos
 
 
+class Bot(Tank):
+
+    def __init__(self, next_action, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.next_action = next_action
+        self.collision = False
+
+    def update(self):
+        state = CurrentState(
+            ticks=pygame.time.get_ticks(),
+            speed=self.speed,
+            angle=self.angle,
+            collision=self.collision
+        )
+        self.collision = False
+
+        action = self.next_action(state)
+
+        # XXX validate limits
+        self.speed = action.speed
+        self.angle = action.angle
+
+        direction_x = math.cos(math.radians(self.angle+90)) * self.speed
+        direction_y = math.sin(math.radians(self.angle-90)) * self.speed
+
+        self.transformed_image = pygame.transform.rotate(self.tank_image, self.angle)
+        self.previous_x, self.previous_y = self.pos_x, self.pos_y
+        self.pos_x = direction_x + self.pos_x
+        self.pos_y = direction_y + self.pos_y
+
+        self._rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
+
+        super().update()
+
+    def setCollision(self, collid: bool):
+        self.collision = collid
+
+    # XXX use for detecting nearby bots
+    def check_player_radius(self, playerpos):
+        follow_radius = self.in_circle(*playerpos, self.follow_radius)
+        fire_radius = self.in_circle(*playerpos, self.fire_radius)
+
+        if follow_radius and not self.collision:
+            self.follow_player = True
+            self.angle = self._calcAngle(playerpos)
+
+            if fire_radius:
+                self.fire(playerpos)
+
+        else:
+            self.follow_player = False
+
+    def in_circle(self, x, y, radius):
+        center_x, center_y = self.center()
+        dist = (center_x-x) ** 2 + (center_y-y) ** 2
+        return dist < radius**2
+
+
 class Enemy(Tank):
 
     def __init__(self, follow_radius, bg_pos=(0, 0), *args, **kwargs):
@@ -132,9 +191,6 @@ class Enemy(Tank):
 
     def change_angle(self):
         self.angle += 30
-
-    def setBgPos(self, bgpos):
-        self.bg_x, self.bg_y = bgpos
 
     def moveRandom(self):
         if pygame.time.get_ticks() - self.start_time > self.max_time:

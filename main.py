@@ -5,6 +5,7 @@ import entities
 from controller import Controller
 import background as bg
 import assets
+import algo
 
 
 def checkWallCollision(points: Tuple[int, int, int, int]):
@@ -14,8 +15,7 @@ def checkWallCollision(points: Tuple[int, int, int, int]):
 
 
 def main():
-
-    global running, max_enemy
+    global running
 
     time = 0
     game_over = False
@@ -32,9 +32,6 @@ def main():
 
         if not game_over:
             key_press = pygame.key.get_pressed()
-
-            if controller.getEnemyCount() < max_enemy or (time + 1) % 8500 == 0:
-                controller.spawnEnemy()
 
             time += 1
 
@@ -64,8 +61,6 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((900, 700))
 
     running = True
-
-    max_enemy = 3
 
     controller = Controller(screen)
 
@@ -106,7 +101,29 @@ if __name__ == "__main__":
 
     spawn_lst = [(650, 120), (250, 450), (650, 450)]
 
-    controller.setSpawnlst(spawn_lst)
+    controller.setSpawnlst(spawn_lst)  # XXX to go?
+
+    controller.addBot(entities.Bot(
+        next_action=algo.RandomAlgo(), 
+        pos=spawn_lst[0], 
+        screen=screen, 
+        img_path=assets.ENEMY_TANK,
+        controller=controller, 
+        speed=0, 
+        fire_speed=0.5,
+        fire_delay=450, fire_radius=150,
+    ))
+
+    controller.addBot(entities.Bot(
+        next_action=algo.RandomAlgo(), 
+        pos=spawn_lst[1], 
+        screen=screen, 
+        img_path=assets.ENEMY_TANK,
+        controller=controller, 
+        speed=0, 
+        fire_speed=0.5,
+        fire_delay=450, fire_radius=150,
+    ))
 
     game_over_font = pygame.font.SysFont('Times', 50, True)
     score_font = pygame.font.SysFont('Consolas', 30)
