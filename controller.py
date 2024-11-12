@@ -12,17 +12,14 @@ class Controller:
     obstacles = set()
     bg_x, bg_y = (0, 0)  # background position
     prev_bg_x, prev_bg_y = (0, 0)  # previous background position
-    lives = 1
     score = 0
 
-    def __init__(self, screen, spawn_pos=None, lives=0):
+    def __init__(self, screen, spawn_pos=None):
         if spawn_pos is None:
             spawn_pos = []
 
         self.screen = screen
         self.spawn_lst = spawn_pos
-        self.lives = lives
-        self.max_lives = lives
 
     def addObstacle(self, obstacle, collidObj):
         self.obstacles.add((obstacle, collidObj))
@@ -109,15 +106,10 @@ class Controller:
                       fire_delay=450, fire_radius=150)
         self.enemies.add(enemy)
 
-    def getLives(self):
-        return self.lives
-
     def getScore(self):
         return self.score
 
     def reset(self):
-
         self.enemies = set()
         self.bullets = set()
         self.score = 0
-        self.lives = self.max_lives

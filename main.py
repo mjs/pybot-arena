@@ -47,16 +47,13 @@ def main():
 
             time += 1
 
-            if controller.getLives() == 0:
-                game_over = True
-                score = controller.getScore()
-                controller.reset()
+            # if controller.getLives() == 0:
+            #     game_over = True
+            #     score = controller.getScore()
+            #     controller.reset()
 
         background.update()
         controller.update()
-
-        for x in range(controller.getLives()):
-            screen.blit(life_image, (50 + ((life_image.get_width() + 10) * x), 10))
 
         time_rect = screen.blit(score_font.render(f"{time}", True, (255, 255, 255)),
                                 (screen.get_width()-time_rect.width-100, 20))
@@ -82,11 +79,8 @@ if __name__ == "__main__":
     running = True
 
     max_enemy = 3
-    lives = 3
 
-    life_image = pygame.image.load(assets.LIFE)
-
-    controller = Controller(screen, lives=lives)
+    controller = Controller(screen)
 
     background = bg.Background(assets.BACKGROUND, screen, (-5, -5))
     bg_rect = background.getRect()
