@@ -119,7 +119,6 @@ class Enemy(Tank):
         self.bg_x, self.bg_y = bg_pos
         self.org_x, self.org_y = self.pos_x, self.pos_y
 
-        self.follow_player = False
         self.collision = False
 
     def change_direction(self):
@@ -137,10 +136,8 @@ class Enemy(Tank):
     def setBgPos(self, bgpos):
         self.bg_x, self.bg_y = bgpos
 
-    def moveRandom(self, playerpos):
-
-        self.check_player_radius(playerpos)
-        if not self.follow_player and pygame.time.get_ticks() - self.start_time > self.max_time:
+    def moveRandom(self):
+        if pygame.time.get_ticks() - self.start_time > self.max_time:
 
             self.start_time = pygame.time.get_ticks()
             self.max_time = random.randint(15000, 18000)
@@ -148,15 +145,15 @@ class Enemy(Tank):
 
         self.change_direction()
 
-        _, _, hyp = self._calcAdjHyp(playerpos)
+        #_, _, hyp = self._calcAdjHyp(playerpos)
 
-        if hyp > 100:
-            self.previous_x, self.previous_y = self.pos_x, self.pos_y
-            self.pos_x = self.direction_x + self.pos_x + self.bg_x
-            self.pos_y = self.direction_y + self.pos_y + self.bg_y
+        self.previous_x, self.previous_y = self.pos_x, self.pos_y
+        self.pos_x = self.direction_x + self.pos_x + self.bg_x
+        self.pos_y = self.direction_y + self.pos_y + self.bg_y
 
         self._rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
 
+    # XXX use for detecting nearby bots
     def check_player_radius(self, playerpos):
         follow_radius = self.in_circle(*playerpos, self.follow_radius)
         fire_radius = self.in_circle(*playerpos, self.fire_radius)
@@ -176,52 +173,19 @@ class Enemy(Tank):
         dist = (center_x-x) ** 2 + (center_y-y) ** 2
         return dist < radius**2
 
-    def update(self, playerpos):
-        super(Enemy, self).update()
-        self.moveRandom(playerpos)
+    def update(self):
+        super().update()
+        self.moveRandom()
 
     def moveTo(self, pos):
         pass
-
-
-class Player(Tank):
-
-    def __init__(self, *args, **kwargs):
-        super(Player, self).__init__(*args, **kwargs)
-        self.mouse_pos = (0, 0)
-
-    def keyEvent(self, key_press):
-
-        screen_size = self.screen.get_size()
-
-        pos_x, pos_y = self.pos()
-
-        self.previous_x, self.previous_y = self.pos_x, self.pos_y
-
-        if key_press[pygame.K_a] and pos_x >= 30:
-            self.pos_x -= self.speed
-
-        if key_press[pygame.K_w] and pos_y >= 30:
-            self.pos_y -= self.speed
-
-        if key_press[pygame.K_d] and pos_x <= screen_size[0] - 100:
-            self.pos_x += self.speed
-
-        if key_press[pygame.K_s] and pos_y <= screen_size[1] - 100:
-            self.pos_y += self.speed
-
-    def mouseEvent(self, mousepos):
-        self.mouse_pos = mousepos
-        self.angle = self._calcAngle(mousepos)
-        self.transformed_image = pygame.transform.rotate(self.tank_image, self.angle)
-        self._rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
 
 
 class Bullet:
 
     def __init__(self, screen, tank_object, normalpos, tankpos, angle, fire_radius: int, speed: float = 0.5):
         self.screen = screen
-        self._destory = False
+        self._destroyed = False
         self.bullet_image = pygame.image.load(assets.BULLET).convert_alpha()
         self.transformed_img = self.bullet_image
 
@@ -237,12 +201,12 @@ class Bullet:
 
         self.transformed_img = pygame.transform.rotate(self.bullet_image, angle)
 
-    def update(self, bg_pos: Tuple[int, int]):
-        self.current_pos = (self.normal_pos[0] + self.current_pos[0] + bg_pos[0]), \
-                           (self.normal_pos[1] + self.current_pos[1] + bg_pos[1])
+    def update(self):
+        self.current_pos = ((self.normal_pos[0] + self.current_pos[0]),
+                           (self.normal_pos[1] + self.current_pos[1]))
 
         if self.dist() >= self._fire_radius:
-            self._destory = True
+            self._destroyed = True
 
         self.screen.blit(self.transformed_img, self.current_pos)
 
@@ -250,7 +214,7 @@ class Bullet:
         return math.hypot((self.current_pos[0] - self._initial_pos[0]), (self.current_pos[1] - self._initial_pos[1]))
 
     def destroyed(self):
-        return self._destory
+        return self._destroyed
 
     def getRect(self):
         return self.transformed_img.get_rect(center=(self.current_pos))

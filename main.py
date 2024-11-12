@@ -32,22 +32,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            if event.type == pygame.MOUSEBUTTONDOWN and not game_over:
-                player.fire(event.pos)
-
-            elif event.type == pygame.MOUSEBUTTONDOWN and game_over:
-                game_over = False
-                max_enemy = 1
-                score = 0
-                time = 0
-
         if not game_over:
             key_press = pygame.key.get_pressed()
-
-            # background.keyEvent(key_press, player.pos())
-
-            player.keyEvent(key_press)
-            player.mouseEvent(pygame.mouse.get_pos())
 
             if controller.getEnemyCount() < max_enemy or (time + 1) % 8500 == 0:
                 controller.spawnEnemy()
@@ -58,11 +44,6 @@ def main():
             if (score+1) % 25 == 0:
                 max_enemy += 1
                 score += 1
-
-            if checkWallCollision(player.getBbox()):
-                player.resetPreviousPos()
-
-            controller.setSpawnlst(spawn_lst)
 
             time += 1
 
@@ -106,10 +87,6 @@ if __name__ == "__main__":
     life_image = pygame.image.load(assets.LIFE)
 
     controller = Controller(screen, lives=lives)
-    player = entities.Player(assets.PLAYER_TANK, screen, (250, 200), controller=controller, speed=2, fire_speed=2,
-                       fire_delay=100, fire_radius=250)
-
-    controller.setPlayer(player)
 
     background = bg.Background(assets.BACKGROUND, screen, (-5, -5))
     bg_rect = background.getRect()

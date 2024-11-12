@@ -8,7 +8,6 @@ from random import choice
 class Controller:
     bullets = set()
     enemies = set()
-    player = None
     screen = None
     obstacles = set()
     bg_x, bg_y = (0, 0)  # background position
@@ -25,9 +24,6 @@ class Controller:
         self.lives = lives
         self.max_lives = lives
 
-    def setPlayer(self, tank):
-        self.player = tank
-
     def setBgPos(self, bgpos, prev_pos):
         self.bg_x, self.bg_y = bgpos
         self.prev_bg_x, self.prev_bg_y = prev_pos
@@ -39,17 +35,12 @@ class Controller:
         bullet = Bullet(self.screen, tank_object, normal_pos, fire_pos, angle, radius, speed)
         self.bullets.add(bullet)
 
-    def getPlayerPos(self):
-        return self.player.pos()
-
     def updateTanks(self):
-        self.player.update()
-
         bg_x, bg_y = self.bg_x - self.prev_bg_x, self.bg_y - self.prev_bg_y
 
         for tank in self.enemies:
-            tank.setBgPos((bg_x, bg_y))
-            tank.update(self.player.center())
+            tank.setBgPos((bg_x, bg_y)) # XXX not necessary?
+            tank.update()
 
     def updateObstacles(self):
         for obs, _ in self.obstacles:
@@ -87,21 +78,23 @@ class Controller:
             else:
                 enemy.setCollision(False)
 
-            if self.player.colliderect(enemy.getRectObject()):
-                self.player.resetPreviousPos()
-                enemy.resetPreviousPos()
+            # XXX
+            #if self.player.colliderect(enemy.getRectObject()):
+                #self.player.resetPreviousPos()
+                #enemy.resetPreviousPos()
 
-        for bullet in self.bullets.copy():
-            for tank in self.enemies.copy():
-                if bullet.tankObject() == self.player and tank.colliderect(bullet.getRect()):
-                    self.enemies.remove(tank)
-                    self.bullets.remove(bullet)
-                    self.score += 1
-                    break
+        # XXX
+        # for bullet in self.bullets.copy():
+        #     for tank in self.enemies.copy():
+        #         if bullet.tankObject() == self.player and tank.colliderect(bullet.getRect()):
+        #             self.enemies.remove(tank)
+        #             self.bullets.remove(bullet)
+        #             self.score += 1
+        #             break
 
-            if bullet.tankObject() != self.player and self.player.colliderect(bullet.getRect()):
-                self.bullets.remove(bullet)
-                self.lives -= 1
+        #     if bullet.tankObject() != self.player and self.player.colliderect(bullet.getRect()):
+        #         self.bullets.remove(bullet)
+        #         self.lives -= 1
 
     def getEnemyCount(self):
         return len(self.enemies)
@@ -119,7 +112,7 @@ class Controller:
 
         pos = choice(self.spawn_lst)
         enemy = Enemy(follow_radius=200, pos=pos, screen=self.screen, img_path=assets.ENEMY_TANK,
-                      controller=self, speed=0.4, fire_speed=self.player.fire_speed,
+                      controller=self, speed=0.4, fire_speed=0.5,
                       fire_delay=450, fire_radius=150)
         self.enemies.add(enemy)
 
