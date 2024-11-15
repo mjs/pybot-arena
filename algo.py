@@ -1,4 +1,6 @@
+import random
 from dataclasses import dataclass
+
 
 @dataclass
 class CurrentState:
@@ -14,11 +16,9 @@ class Action:
     angle: int
 
 
-import random
-
 class RandomAlgo:
     def __init__(self):
-        self.speed = random.random() * 2 
+        self.speed = random.random() * 2
         self.angle = random.random() * 360
 
     def __call__(self, state):

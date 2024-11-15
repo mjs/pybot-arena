@@ -32,7 +32,8 @@ class BackgroundWall:
 
         self._collision = False
 
-        self.collision = Collision(img, split, wall_collision=True, wall_padding=(1, 1, 1, 1))
+        self.collision = Collision(
+            img, split, wall_collision=True, wall_padding=(1, 1, 1, 1))
 
     def setPos(self, x, y):
         self.x, self.y = x, y

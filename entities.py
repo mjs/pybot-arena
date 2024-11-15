@@ -9,8 +9,16 @@ import assets
 
 class Tank:
 
-    def __init__(self, img_path: str, screen, pos, controller, speed: float = 0.5,
-                 fire_radius: int = 250, fire_delay: int = 500, fire_speed=0.5):
+    def __init__(
+            self,
+            img_path: str,
+            screen,
+            pos,
+            controller,
+            speed: float = 0.5,
+            fire_radius: int = 250,
+            fire_delay: int = 500,
+            fire_speed=0.5):
 
         self.screen = screen
         self.pos_x, self.pos_y = pos
@@ -70,8 +78,8 @@ class Tank:
             self._fired = True
             adj, opp, hyp = self._calcAdjHyp(pos)
             n_pos = (adj / hyp, opp / hyp)
-            self.controller.createBullet(self, n_pos, self.fire_pos(pos), self.angle,
-                                         self.fire_radius, self.fire_speed)
+            self.controller.createBullet(self, n_pos, self.fire_pos(
+                pos), self.angle, self.fire_radius, self.fire_speed)
 
     def getBbox(self):
         # rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
@@ -128,15 +136,17 @@ class Bot(Tank):
         self.speed = action.speed
         self.angle = action.angle
 
-        direction_x = math.cos(math.radians(self.angle+90)) * self.speed
-        direction_y = math.sin(math.radians(self.angle-90)) * self.speed
+        direction_x = math.cos(math.radians(self.angle + 90)) * self.speed
+        direction_y = math.sin(math.radians(self.angle - 90)) * self.speed
 
-        self.transformed_image = pygame.transform.rotate(self.tank_image, self.angle)
+        self.transformed_image = pygame.transform.rotate(
+            self.tank_image, self.angle)
         self.previous_x, self.previous_y = self.pos_x, self.pos_y
         self.pos_x = direction_x + self.pos_x
         self.pos_y = direction_y + self.pos_y
 
-        self._rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
+        self._rect = self.transformed_image.get_rect(
+            center=(self.pos_x, self.pos_y))
 
         super().update()
 
@@ -160,7 +170,7 @@ class Bot(Tank):
 
     def in_circle(self, x, y, radius):
         center_x, center_y = self.center()
-        dist = (center_x-x) ** 2 + (center_y-y) ** 2
+        dist = (center_x - x) ** 2 + (center_y - y) ** 2
         return dist < radius**2
 
 
@@ -181,10 +191,11 @@ class Enemy(Tank):
         self.collision = False
 
     def change_direction(self):
-        self.direction_x = math.cos(math.radians(self.angle+90)) * self.speed
-        self.direction_y = math.sin(math.radians(self.angle-90)) * self.speed
+        self.direction_x = math.cos(math.radians(self.angle + 90)) * self.speed
+        self.direction_y = math.sin(math.radians(self.angle - 90)) * self.speed
 
-        self.transformed_image = pygame.transform.rotate(self.tank_image, self.angle)
+        self.transformed_image = pygame.transform.rotate(
+            self.tank_image, self.angle)
 
     def setCollision(self, collid: bool):
         self.collision = collid
@@ -201,13 +212,14 @@ class Enemy(Tank):
 
         self.change_direction()
 
-        #_, _, hyp = self._calcAdjHyp(playerpos)
+        # _, _, hyp = self._calcAdjHyp(playerpos)
 
         self.previous_x, self.previous_y = self.pos_x, self.pos_y
         self.pos_x = self.direction_x + self.pos_x + self.bg_x
         self.pos_y = self.direction_y + self.pos_y + self.bg_y
 
-        self._rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
+        self._rect = self.transformed_image.get_rect(
+            center=(self.pos_x, self.pos_y))
 
     # XXX use for detecting nearby bots
     def check_player_radius(self, playerpos):
@@ -226,7 +238,7 @@ class Enemy(Tank):
 
     def in_circle(self, x, y, radius):
         center_x, center_y = self.center()
-        dist = (center_x-x) ** 2 + (center_y-y) ** 2
+        dist = (center_x - x) ** 2 + (center_y - y) ** 2
         return dist < radius**2
 
     def update(self):
@@ -239,7 +251,15 @@ class Enemy(Tank):
 
 class Bullet:
 
-    def __init__(self, screen, tank_object, normalpos, tankpos, angle, fire_radius: int, speed: float = 0.5):
+    def __init__(
+            self,
+            screen,
+            tank_object,
+            normalpos,
+            tankpos,
+            angle,
+            fire_radius: int,
+            speed: float = 0.5):
         self.screen = screen
         self._destroyed = False
         self.bullet_image = pygame.image.load(assets.BULLET).convert_alpha()
@@ -255,11 +275,12 @@ class Bullet:
         rect = self.transformed_img.get_rect()
         self.current_pos = tankpos[0] - rect.centerx, tankpos[1] - rect.centery
 
-        self.transformed_img = pygame.transform.rotate(self.bullet_image, angle)
+        self.transformed_img = pygame.transform.rotate(
+            self.bullet_image, angle)
 
     def update(self):
         self.current_pos = ((self.normal_pos[0] + self.current_pos[0]),
-                           (self.normal_pos[1] + self.current_pos[1]))
+                            (self.normal_pos[1] + self.current_pos[1]))
 
         if self.dist() >= self._fire_radius:
             self._destroyed = True
@@ -267,7 +288,9 @@ class Bullet:
         self.screen.blit(self.transformed_img, self.current_pos)
 
     def dist(self):
-        return math.hypot((self.current_pos[0] - self._initial_pos[0]), (self.current_pos[1] - self._initial_pos[1]))
+        return math.hypot(
+            (self.current_pos[0] - self._initial_pos[0]),
+            (self.current_pos[1] - self._initial_pos[1]))
 
     def destroyed(self):
         return self._destroyed

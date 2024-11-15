@@ -25,15 +25,23 @@ class Controller:
     def addBot(self, bot):
         self.bots.add(bot)
 
-    def createBullet(self, tank_object, normal_pos, fire_pos, angle, radius, speed):
-        bullet = Bullet(self.screen, tank_object, normal_pos, fire_pos, angle, radius, speed)
+    def createBullet(
+            self,
+            tank_object,
+            normal_pos,
+            fire_pos,
+            angle,
+            radius,
+            speed):
+        bullet = Bullet(self.screen, tank_object, normal_pos,
+                        fire_pos, angle, radius, speed)
         self.bullets.add(bullet)
 
     def updateBots(self):
         for bot in self.bots:
             bot.update()
 
-    #XXX to go
+    # XXX to go
     def updateEnemies(self):
         for tank in self.enemies:
             tank.update()
@@ -62,8 +70,9 @@ class Controller:
         for bot in self.bots:
             collid_count = 0
             for _, collid in self.obstacles:
-                if collid.rect_collide(bot.getBbox())[0] or \
-                        not (100 <= bot.pos_x <= 800 and 100 <= bot.pos_y <= 600):
+                if collid.rect_collide(
+                        bot.getBbox())[0] or not (
+                        100 <= bot.pos_x <= 800 and 100 <= bot.pos_y <= 600):
                     collid_count += 1
 
             if collid_count > 0:
@@ -74,8 +83,8 @@ class Controller:
         for enemy in self.enemies:
             collid_count = 0
             for _, collid in self.obstacles:
-                if collid.rect_collide(enemy.getBbox())[0] or \
-                        not (100 <= enemy.pos_x <= 800 and 100 <= enemy.pos_y <= 600):
+                if collid.rect_collide(enemy.getBbox())[0] or not (
+                        100 <= enemy.pos_x <= 800 and 100 <= enemy.pos_y <= 600):
                     collid_count += 1
                     enemy.change_angle()
 
@@ -86,9 +95,9 @@ class Controller:
                 enemy.setCollision(False)
 
             # XXX
-            #if self.player.colliderect(enemy.getRectObject()):
-                #self.player.resetPreviousPos()
-                #enemy.resetPreviousPos()
+            # if self.player.colliderect(enemy.getRectObject()):
+                # self.player.resetPreviousPos()
+                # enemy.resetPreviousPos()
 
         # XXX
         # for bullet in self.bullets.copy():
@@ -118,9 +127,16 @@ class Controller:
 
     def spawnEnemy(self):
         pos = choice(self.spawn_lst)
-        enemy = Enemy(follow_radius=200, pos=pos, screen=self.screen, img_path=assets.ENEMY_TANK,
-                      controller=self, speed=0.4, fire_speed=0.5,
-                      fire_delay=450, fire_radius=150)
+        enemy = Enemy(
+            follow_radius=200,
+            pos=pos,
+            screen=self.screen,
+            img_path=assets.ENEMY_TANK,
+            controller=self,
+            speed=0.4,
+            fire_speed=0.5,
+            fire_delay=450,
+            fire_radius=150)
         self.enemies.add(enemy)
 
     def reset(self):
