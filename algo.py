@@ -5,8 +5,10 @@ from dataclasses import dataclass
 @dataclass
 class NearbyBot:
     name: str
+    #XXX maybe don't need these
     x: float
     y: float
+    #XXX distance
     relative_angle: float
     speed: float
     angle: float
@@ -18,6 +20,7 @@ class CurrentState:
     y: float
     speed: float
     angle: float
+    #XXX fire_delay time
     collision: bool   # XXX maybe don't keep this
     nearby: list[NearbyBot]
 
@@ -46,7 +49,6 @@ class Algo(ABC):
         raise NotImplementedError
 
 
-# XXX firing bullets
 # XXX color per bot
 # XXX ensure unique names
 # XXX fuel? 
@@ -89,6 +91,8 @@ class HeadlightsAlgo(Algo):
             if state.speed != 0.1:
                 return SetSpeed(0.1)
             first = state.nearby[0]
+            if abs(state.angle - first.relative_angle) < 1:
+                return Fire()
             return SetAngle(first.relative_angle)
 
         if state.speed != 0.5:

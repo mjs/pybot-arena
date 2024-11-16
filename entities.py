@@ -73,12 +73,18 @@ class Tank:
 
         return math.degrees(math.atan2(-nx, -ny))
 
-    def fire(self, pos):
+    def fire(self):
 
         if not self._fired:
+            # XXX There is probably a better way
+            pos_x = self.pos_x + math.cos(math.radians(self.angle + 90))
+            pos_y = self.pos_y + math.sin(math.radians(self.angle - 90)) 
+            pos = (pos_x, pos_y)
+
             self._fired = True
             adj, opp, hyp = self._calcAdjHyp(pos)
             n_pos = (adj / hyp, opp / hyp)
+            # XXX fire_pos could just be center()?
             self.controller.createBullet(self, n_pos, self.fire_pos(
                 pos), self.angle, self.fire_radius, self.fire_speed)
 
@@ -165,6 +171,8 @@ class Bot(Tank):
             self.angle = action.angle
             self.angle = min(self.angle, 360)
             self.angle = max(self.angle, 0)
+        elif typ is Fire:
+            self.fire()
 
         direction_x = math.cos(math.radians(self.angle + 90)) * self.speed
         direction_y = math.sin(math.radians(self.angle - 90)) * self.speed

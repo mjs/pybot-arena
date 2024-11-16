@@ -51,11 +51,8 @@ class Controller:
             obs.update()
 
     def update_bullets(self):
-        bg_x, bg_y = self.bg_x - self.prev_bg_x, self.bg_y - self.prev_bg_y
-
         for bullet in self.bullets.copy():
-            bullet.update((bg_x, bg_y))
-
+            bullet.update()
             if bullet.destroyed():
                 self.bullets.remove(bullet)
 
