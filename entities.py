@@ -141,6 +141,7 @@ class Bot(Tank):
                     name=other.algo.name(),
                     x=other.pos_x,
                     y=other.pos_y,
+                    relative_angle=self._calcAngle(other.center()),
                     speed=other.speed,
                     angle=other.angle,
                 )

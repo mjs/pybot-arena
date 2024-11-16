@@ -7,9 +7,9 @@ class NearbyBot:
     name: str
     x: float
     y: float
+    relative_angle: float
     speed: float
     angle: float
-    # XXX relative angle
 
 @dataclass
 class CurrentState:
@@ -41,6 +41,8 @@ class Algo(ABC):
 # XXX ensure unique names
 
 
+# XXX move these out
+
 class RandomAlgo(Algo):
     def __init__(self):
         self.speed = random.random() * 2
@@ -66,7 +68,7 @@ class HeadlightsAlgo(Algo):
 
     def next(self, state: CurrentState) -> Action:
         if state.nearby:
-            return Action(speed=0, angle=None)
+            return Action(speed=0.1, angle=state.nearby[0].relative_angle)
         if state.collision:
             self.angle = random.random() * 360
         return Action(speed=self.speed, angle=self.angle)
