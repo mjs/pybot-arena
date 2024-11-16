@@ -18,13 +18,23 @@ class CurrentState:
     y: float
     speed: float
     angle: float
-    collision: bool
+    collision: bool   # XXX maybe don't keep this
     nearby: list[NearbyBot]
 
-@dataclass
 class Action:
-    speed: float | None
-    angle: float | None
+    pass
+
+@dataclass
+class SetAngle(Action):
+    angle: float
+
+@dataclass
+class SetSpeed(Action):
+    speed: float
+
+@dataclass
+class Fire(Action):
+    pass
 
 
 class Algo(ABC):
@@ -32,43 +42,57 @@ class Algo(ABC):
     def name(self) -> str:
         raise NotImplementedError
 
-    def next(self, state: CurrentState) -> Action:
+    def next(self, state: CurrentState) -> Action | None:
         raise NotImplementedError
 
 
 # XXX firing bullets
 # XXX color per bot
 # XXX ensure unique names
+# XXX fuel? 
 
 
 # XXX move these out
 
 class RandomAlgo(Algo):
-    def __init__(self):
-        self.speed = random.random() * 2
-        self.angle = random.random() * 360
 
     def name(self):
         return "random"
 
-    def next(self, state: CurrentState) -> Action:
+    def next(self, state: CurrentState) -> Action | None:
         if state.collision:
-            self.speed = (random.random() * 2) - 1
-            self.angle = random.random() * 360
-        return Action(speed=self.speed, angle=self.angle)
+            return SetAngle(random.random() * 360)
+        if state.speed == 0:
+            return SetSpeed((random.random() * 2) - 1)
+        return None
 
 
+# XXX rename
 class HeadlightsAlgo(Algo):
     def __init__(self):
-        self.speed = 0.5
-        self.angle = random.random() * 360
+        self.queue = [
+            SetAngle(random.random() * 360),
+            SetSpeed(0.5),
+        ]
 
     def name(self):
         return "test"
 
-    def next(self, state: CurrentState) -> Action:
-        if state.nearby:
-            return Action(speed=0.1, angle=state.nearby[0].relative_angle)
+    def next(self, state: CurrentState) -> Action | None:
         if state.collision:
-            self.angle = random.random() * 360
-        return Action(speed=self.speed, angle=self.angle)
+            self.queue = []
+            return SetAngle(random.random() * 360)
+        if self.queue:
+            return self.queue.pop(0)
+
+        if state.nearby:
+            if state.speed != 0.1:
+                return SetSpeed(0.1)
+            first = state.nearby[0]
+            return SetAngle(first.relative_angle)
+
+        if state.speed != 0.5:
+            self.queue = [
+                SetSpeed(0.5),
+            ]
+            return SetAngle(random.random() * 360)

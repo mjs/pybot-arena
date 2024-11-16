@@ -3,7 +3,7 @@ import random
 import pygame
 import math
 from typing import Tuple
-from algo import Algo, CurrentState, NearbyBot
+from algo import Algo, CurrentState, NearbyBot, SetAngle, SetSpeed, Fire
 import assets
 
 # XXX collapse Tank and Bot
@@ -152,13 +152,16 @@ class Bot(Tank):
         self.collision = False
 
         action = self.algo.next(state)
+
+        if action:
+            print(self.algo.name(), action)
         
-        if action.speed is not None:
+        typ = type(action)
+        if typ is SetSpeed:
             self.speed = action.speed
             self.speed = min(self.speed, 1)
             self.speed = max(self.speed, -1)
-
-        if action.angle is not None:
+        elif typ is SetAngle:
             self.angle = action.angle
             self.angle = min(self.angle, 360)
             self.angle = max(self.angle, 0)
