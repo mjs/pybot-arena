@@ -146,7 +146,7 @@ if __name__ == "__main__":
         controller=controller,
         speed=0,
         fire_speed=0.5,
-        fire_delay=600, fire_radius=150,
+        fire_delay=1000, fire_radius=150,
     ))
 
     controller.addBot(entities.Bot(
@@ -157,7 +157,7 @@ if __name__ == "__main__":
         controller=controller,
         speed=0,
         fire_speed=0.5,
-        fire_delay=600, fire_radius=150,
+        fire_delay=1000, fire_radius=150,
     ))
 
     controller.addBot(entities.Bot(
@@ -168,7 +168,7 @@ if __name__ == "__main__":
         controller=controller,
         speed=0,
         fire_speed=0.5,
-        fire_delay=600, fire_radius=150,
+        fire_delay=1000, fire_radius=150,
     ))
 
     game_over_font = pygame.font.SysFont('Times', 50, True)

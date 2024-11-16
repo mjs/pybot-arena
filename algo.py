@@ -66,6 +66,8 @@ class RandomAlgo(Algo):
             return SetAngle(random.random() * 360)
         if state.speed == 0:
             return SetSpeed((random.random() * 2) - 1)
+        if random.random() < 0.1:
+            return Fire()
         return None
 
 
