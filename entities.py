@@ -3,9 +3,10 @@ import random
 import pygame
 import math
 from typing import Tuple
-from algo import CurrentState
+from algo import Algo, CurrentState, NearbyBot
 import assets
 
+# XXX collapse Tank and Bot
 
 class Tank:
 
@@ -113,28 +114,53 @@ class Tank:
     def setPos(self, pos):
         self.pos_x, self.pos_y = pos
 
+    def in_circle(self, x, y, radius):
+        center_x, center_y = self.center()
+        dist = (center_x - x) ** 2 + (center_y - y) ** 2
+        return dist < radius**2
+
 
 class Bot(Tank):
 
-    def __init__(self, next_action, *args, **kwargs):
+    def __init__(self, algo: Algo, *args, detection_radius: float=150, **kwargs):
         super().__init__(*args, **kwargs)
-        self.next_action = next_action
+        self.algo = algo
+        self.detection_radius = detection_radius
         self.collision = False
 
-    def update(self):
+    def update(self, other_bots: list['Bot']):
         state = CurrentState(
             ticks=pygame.time.get_ticks(),
+            x=self.pos_x,
+            y=self.pos_y,
             speed=self.speed,
             angle=self.angle,
-            collision=self.collision
+            collision=self.collision,
+            nearby = [
+                NearbyBot(
+                    name=other.algo.name(),
+                    x=other.pos_x,
+                    y=other.pos_y,
+                    speed=other.speed,
+                    angle=other.angle,
+                )
+                for other in other_bots
+                if self.in_circle(other.pos_x, other.pos_y, self.detection_radius)
+            ]
         )
         self.collision = False
 
-        action = self.next_action(state)
+        action = self.algo.next(state)
+        
+        if action.speed is not None:
+            self.speed = action.speed
+            self.speed = min(self.speed, 1)
+            self.speed = max(self.speed, -1)
 
-        # XXX validate limits
-        self.speed = action.speed
-        self.angle = action.angle
+        if action.angle is not None:
+            self.angle = action.angle
+            self.angle = min(self.angle, 360)
+            self.angle = max(self.angle, 0)
 
         direction_x = math.cos(math.radians(self.angle + 90)) * self.speed
         direction_y = math.sin(math.radians(self.angle - 90)) * self.speed
@@ -168,12 +194,8 @@ class Bot(Tank):
         else:
             self.follow_player = False
 
-    def in_circle(self, x, y, radius):
-        center_x, center_y = self.center()
-        dist = (center_x - x) ** 2 + (center_y - y) ** 2
-        return dist < radius**2
 
-
+#XXX remove? 
 class Enemy(Tank):
 
     def __init__(self, follow_radius, bg_pos=(0, 0), *args, **kwargs):
@@ -235,11 +257,6 @@ class Enemy(Tank):
 
         else:
             self.follow_player = False
-
-    def in_circle(self, x, y, radius):
-        center_x, center_y = self.center()
-        dist = (center_x - x) ** 2 + (center_y - y) ** 2
-        return dist < radius**2
 
     def update(self):
         super().update()

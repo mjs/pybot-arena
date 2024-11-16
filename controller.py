@@ -39,7 +39,7 @@ class Controller:
 
     def updateBots(self):
         for bot in self.bots:
-            bot.update()
+            bot.update(other_bots=[b for b in self.bots if b!=bot])
 
     # XXX to go
     def updateEnemies(self):

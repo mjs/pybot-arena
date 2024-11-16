@@ -133,12 +133,13 @@ if __name__ == "__main__":
          wall_coll6)]:
         controller.addObstacle(*wall)
 
-    spawn_lst = [(650, 120), (250, 450), (650, 450)]
-
-    controller.setSpawnlst(spawn_lst)  # XXX to go?
+    spawn_lst = [(250, 250), (650, 120), (250, 450), (650, 450)]
+    controller.setSpawnlst(spawn_lst)
+    
+    # XXX dynamic loading
 
     controller.addBot(entities.Bot(
-        next_action=algo.RandomAlgo(),
+        algo=algo.RandomAlgo(),
         pos=spawn_lst[0],
         screen=screen,
         img_path=assets.ENEMY_TANK,
@@ -149,8 +150,19 @@ if __name__ == "__main__":
     ))
 
     controller.addBot(entities.Bot(
-        next_action=algo.RandomAlgo(),
+        algo=algo.HeadlightsAlgo(),
         pos=spawn_lst[1],
+        screen=screen,
+        img_path=assets.ENEMY_TANK,
+        controller=controller,
+        speed=0,
+        fire_speed=0.5,
+        fire_delay=450, fire_radius=150,
+    ))
+
+    controller.addBot(entities.Bot(
+        algo=algo.HeadlightsAlgo(),
+        pos=spawn_lst[2],
         screen=screen,
         img_path=assets.ENEMY_TANK,
         controller=controller,
