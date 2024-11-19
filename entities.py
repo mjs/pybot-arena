@@ -8,18 +8,21 @@ import assets
 
 # XXX collapse Tank and Bot
 
+
 class Tank:
 
     def __init__(
-            self,
-            img_path: str,
-            screen,
-            pos,
-            controller,
-            speed: float = 0.5,
-            fire_radius: int = 250,
-            fire_delay: int = 500,
-            fire_speed=0.5):
+        self,
+        img_path: str,
+        screen,
+        pos,
+        controller,
+        colour,
+        speed: float = 0.5,
+        fire_radius: int = 250,
+        fire_delay: int = 500,
+        fire_speed=0.5,
+    ):
 
         self.screen = screen
         self.pos_x, self.pos_y = pos
@@ -31,7 +34,12 @@ class Tank:
         self.time_counter = fire_delay
         self.controller = controller
 
+        # XXX remove the word tank
         self.tank_image = pygame.image.load(img_path).convert_alpha()
+        print(self.tank_image.get_size())
+        mask = pygame.Surface(self.tank_image.get_size()).convert_alpha()
+        mask.fill(colour)
+        self.tank_image.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
         self.transformed_image = self.tank_image
         self._rect = self.tank_image.get_rect()
@@ -42,7 +50,7 @@ class Tank:
     def center(self) -> Tuple[int, int]:
         return self.tank_image.get_rect(center=(self.pos_x, self.pos_y)).center
 
-    def _calcAdjHyp(self, pos):
+    def _calc_adj_hyp(self, pos):
         mouse_x, mouse_y = pos
         center_x, center_y = self.center()
 
@@ -53,9 +61,9 @@ class Tank:
 
         return adj, opp, hyp
 
-    def _calcAngle(self, pos):
-        """ calculates angle towards a point """
-        adj, opp, hyp = self._calcAdjHyp(pos)
+    def _calc_angle(self, pos):
+        """calculates angle towards a point"""
+        adj, opp, hyp = self._calc_adj_hyp(pos)
         if hyp == 0:
             hyp = 1
         nx, ny = adj / hyp, opp / hyp  # normalize
@@ -64,18 +72,18 @@ class Tank:
     def fire(self):
         if not self._fired:
             self._fired = True
-            self.controller.createBullet(self, self.fire_radius, self.fire_speed)
+            self.controller.create_bullet(self, self.fire_radius, self.fire_speed)
 
-    def getBbox(self):
+    def get_bbox(self):
         # XXX
         # rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
         rect = self.tank_image.get_rect(center=(self.pos_x, self.pos_y))
         return rect[0], rect[1], rect[0] + rect[2], rect[1] + rect[3]
 
-    def getRectObject(self):
+    def get_rect_object(self):
         return self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
 
-    def resetPreviousPos(self):
+    def reset_previous_pos(self):
         self.pos_x, self.pos_y = self.previous_x, self.previous_y
 
     def pos(self) -> Tuple[float, float]:
@@ -83,19 +91,16 @@ class Tank:
 
     def update(self):
         self.screen.blit(self.transformed_image, self._rect)
+
         # XXX tidy
         if self.time_counter > 0:
             self.time_counter -= 1
-
         else:
             self.time_counter = self.fire_delay
             self._fired = False
 
     def colliderect(self, rect):
-        return self.getRectObject().colliderect(rect)
-
-    def collidelist(self, lst):
-        return self.getRectObject().collidelist(lst)
+        return self.get_rect_object().colliderect(rect)
 
     def setPos(self, pos):
         self.pos_x, self.pos_y = pos
@@ -108,13 +113,13 @@ class Tank:
 
 class Bot(Tank):
 
-    def __init__(self, algo: Algo, *args, detection_radius: float=200, **kwargs):
+    def __init__(self, algo: Algo, *args, detection_radius: float = 200, **kwargs):
         super().__init__(*args, **kwargs)
         self.algo = algo
         self.detection_radius = detection_radius
         self.collision = False
 
-    def update(self, other_bots: list['Bot']):
+    def update(self, other_bots: list["Bot"]):
         state = CurrentState(
             ticks=pygame.time.get_ticks(),
             x=self.pos_x,
@@ -122,18 +127,18 @@ class Bot(Tank):
             speed=self.speed,
             angle=self.angle,
             collision=self.collision,
-            nearby = [
+            nearby=[
                 NearbyBot(
                     name=other.algo.name(),
                     x=other.pos_x,
                     y=other.pos_y,
-                    relative_angle=self._calcAngle(other.center()),
+                    relative_angle=self._calc_angle(other.center()),
                     speed=other.speed,
                     angle=other.angle,
                 )
                 for other in other_bots
                 if self.in_circle(other.pos_x, other.pos_y, self.detection_radius)
-            ]
+            ],
         )
         self.collision = False
 
@@ -145,7 +150,7 @@ class Bot(Tank):
             self.speed = min(self.speed, 0.5)
             self.speed = max(self.speed, -0.5)
         elif typ is SetAngle:
-            # XXX limit allowed angle change 
+            # XXX limit allowed angle change
             self.angle = action.angle
             self.angle = min(self.angle, 360)
             self.angle = max(self.angle, 0)
@@ -155,32 +160,31 @@ class Bot(Tank):
         direction_x = math.cos(math.radians(self.angle + 90)) * self.speed
         direction_y = math.sin(math.radians(self.angle - 90)) * self.speed
 
-        self.transformed_image = pygame.transform.rotate(
-            self.tank_image, self.angle)
+        self.transformed_image = pygame.transform.rotate(self.tank_image, self.angle)
         self.previous_x, self.previous_y = self.pos_x, self.pos_y
         self.pos_x = direction_x + self.pos_x
         self.pos_y = direction_y + self.pos_y
 
-        self._rect = self.transformed_image.get_rect(
-            center=(self.pos_x, self.pos_y))
+        self._rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
 
         super().update()
 
-    def setCollision(self, collid: bool):
+    def set_collision(self, collid: bool):
         self.collision = collid
 
 
 class Bullet:
 
     def __init__(
-            self,
-            screen,
-            owner,
-            normal,
-            initial_pos,
-            angle,
-            fire_radius: int,
-            speed: float = 0.5):
+        self,
+        screen,
+        owner,
+        normal,
+        initial_pos,
+        angle,
+        fire_radius: int,
+        speed: float = 0.5,
+    ):
         self.screen = screen
         self._destroyed = False
         self.bullet_image = pygame.image.load(assets.BULLET).convert_alpha()
@@ -194,12 +198,13 @@ class Bullet:
         rect = self.transformed_img.get_rect()
         self.current_pos = initial_pos[0] - rect.centerx, initial_pos[1] - rect.centery
 
-        self.transformed_img = pygame.transform.rotate(
-            self.bullet_image, angle)
+        self.transformed_img = pygame.transform.rotate(self.bullet_image, angle)
 
     def update(self):
-        self.current_pos = ((self.normal[0] + self.current_pos[0]),
-                            (self.normal[1] + self.current_pos[1]))
+        self.current_pos = (
+            (self.normal[0] + self.current_pos[0]),
+            (self.normal[1] + self.current_pos[1]),
+        )
 
         if self.dist() >= self._fire_radius:
             self._destroyed = True
@@ -209,20 +214,18 @@ class Bullet:
     def dist(self):
         return math.hypot(
             (self.current_pos[0] - self._initial_pos[0]),
-            (self.current_pos[1] - self._initial_pos[1]))
+            (self.current_pos[1] - self._initial_pos[1]),
+        )
 
     def destroyed(self):
         return self._destroyed
 
-    def getRect(self):
+    def get_rect(self):
         return self.transformed_img.get_rect(center=(self.current_pos))
 
     def colliderect(self, rect):
-        return self.getRect().colliderect(rect)
+        return self.get_rect().colliderect(rect)
 
-    def collidelist(self, lst):
-        return self.getRect().collidelist(lst)
-
-    def getBbox(self):
+    def get_bbox(self):
         rect = self.transformed_img.get_rect(center=self.current_pos)
         return rect[0], rect[1], rect[0] + rect[2], rect[1] + rect[3]

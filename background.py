@@ -1,5 +1,4 @@
 import pygame
-from typing import Tuple
 from pycollision import Collision
 
 
@@ -13,14 +12,11 @@ class Background:
     def update(self):
         self.screen.blit(self.bg_image, (self.bg_x, self.bg_y))
 
-    def getPos(self):
+    def get_pos(self):
         return self.bg_x, self.bg_y
 
-    def getRect(self):
+    def get_rect(self):
         return self.bg_image.get_rect()
-
-    def setPos(self, pos):
-        self.bg_x, self.bg_y = pos
 
 
 class BackgroundWall:
@@ -33,20 +29,18 @@ class BackgroundWall:
         self._collision = False
 
         self.collision = Collision(
-            img, split, wall_collision=True, wall_padding=(1, 1, 1, 1))
+            img, split, wall_collision=True, wall_padding=(1, 1, 1, 1)
+        )
 
-    def setPos(self, x, y):
+    def set_pos(self, x, y):
         self.x, self.y = x, y
         self.collision.setSpritePos(self.x, self.y)
 
     def update(self):
         self.screen.blit(self.img, (self.x, self.y))
 
-    def getCollisionObject(self):
+    def get_collision_object(self):
         return self.collision
 
     def get_rect(self) -> pygame.Rect:
         return self.img.get_rect()
-
-    def getPos(self):
-        return self.x, self.y

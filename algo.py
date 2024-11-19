@@ -1,17 +1,19 @@
 import random
-from abc import ABC
+import pygame
 from dataclasses import dataclass
+
 
 @dataclass
 class NearbyBot:
     name: str
-    #XXX maybe don't need these
+    # XXX maybe don't need these
     x: float
     y: float
-    #XXX distance
+    # XXX distance
     relative_angle: float
     speed: float
     angle: float
+
 
 @dataclass
 class CurrentState:
@@ -20,30 +22,38 @@ class CurrentState:
     y: float
     speed: float
     angle: float
-    #XXX fire_delay time
-    collision: bool   # XXX maybe don't keep this
+    # XXX fire_delay time
+    collision: bool  # XXX maybe don't keep this
     nearby: list[NearbyBot]
+    # XXX also report nearby walls to allow for smarter avoidance?
+
 
 class Action:
     pass
+
 
 @dataclass
 class SetAngle(Action):
     angle: float
 
+
 @dataclass
 class SetSpeed(Action):
     speed: float
+
 
 @dataclass
 class Fire(Action):
     pass
 
 
-class Algo(ABC):
+class Algo:
 
     def name(self) -> str:
         raise NotImplementedError
+
+    def colour(self):
+        return pygame.Color(255, 255, 255, 255)
 
     def next(self, state: CurrentState) -> Action | None:
         raise NotImplementedError
@@ -51,15 +61,19 @@ class Algo(ABC):
 
 # XXX color per bot
 # XXX ensure unique names
-# XXX fuel? 
+# XXX fuel?
 
 
 # XXX move these out
+
 
 class RandomAlgo(Algo):
 
     def name(self):
         return "random"
+
+    def colour(self):
+        return pygame.Color(255, 255, 255, 255)
 
     def next(self, state: CurrentState) -> Action | None:
         if state.collision:
@@ -79,8 +93,13 @@ class HeadlightsAlgo(Algo):
             SetSpeed(0.5),
         ]
 
+    # XXX maybe should be set on command line
     def name(self):
         return "test"
+
+    # XXX maybe should be set on command line or randomly assigned
+    def colour(self):
+        return pygame.Color(0, 255, 255, 255)
 
     def next(self, state: CurrentState) -> Action | None:
         if state.collision:
