@@ -1,18 +1,17 @@
-import random
+import math
 
 import pygame
-import math
+
+import assets
 from typing import Tuple
 from algo import Algo, CurrentState, NearbyBot, SetAngle, SetSpeed, Fire
-import assets
-
-# XXX collapse Tank and Bot
 
 
-class Tank:
+class Bot:
 
     def __init__(
         self,
+        algo: Algo,
         img_path: str,
         screen,
         pos,
@@ -22,17 +21,18 @@ class Tank:
         fire_radius: int = 250,
         fire_delay: int = 500,
         fire_speed=0.5,
+        detection_radius: float = 200,
     ):
-
+        self.algo = algo
         self.screen = screen
         self.pos_x, self.pos_y = pos
         self.speed = speed
         self.angle = 0
-        self._fired = False
         self.fire_speed = fire_speed
         self.fire_delay = fire_delay
         self.time_counter = fire_delay
         self.controller = controller
+        self.detection_radius = detection_radius
 
         # XXX remove the word tank
         self.tank_image = pygame.image.load(img_path).convert_alpha()
@@ -46,6 +46,9 @@ class Tank:
 
         self.previous_x, self.previous_y = pos
         self.fire_radius = fire_radius
+
+        self._fired = False
+        self.collision = False
 
     def center(self) -> Tuple[int, int]:
         return self.tank_image.get_rect(center=(self.pos_x, self.pos_y)).center
@@ -88,36 +91,6 @@ class Tank:
 
     def pos(self) -> Tuple[float, float]:
         return self._rect[:2]
-
-    def update(self):
-        self.screen.blit(self.transformed_image, self._rect)
-
-        # XXX tidy
-        if self.time_counter > 0:
-            self.time_counter -= 1
-        else:
-            self.time_counter = self.fire_delay
-            self._fired = False
-
-    def colliderect(self, rect):
-        return self.get_rect_object().colliderect(rect)
-
-    def setPos(self, pos):
-        self.pos_x, self.pos_y = pos
-
-    def in_circle(self, x, y, radius):
-        center_x, center_y = self.center()
-        dist = (center_x - x) ** 2 + (center_y - y) ** 2
-        return dist < radius**2
-
-
-class Bot(Tank):
-
-    def __init__(self, algo: Algo, *args, detection_radius: float = 200, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.algo = algo
-        self.detection_radius = detection_radius
-        self.collision = False
 
     def update(self, other_bots: list["Bot"]):
         state = CurrentState(
@@ -166,8 +139,22 @@ class Bot(Tank):
         self.pos_y = direction_y + self.pos_y
 
         self._rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
+        self.screen.blit(self.transformed_image, self._rect)
 
-        super().update()
+        # XXX tidy
+        if self.time_counter > 0:
+            self.time_counter -= 1
+        else:
+            self.time_counter = self.fire_delay
+            self._fired = False
+
+    def colliderect(self, rect):
+        return self.get_rect_object().colliderect(rect)
+
+    def in_circle(self, x, y, radius):
+        center_x, center_y = self.center()
+        dist = (center_x - x) ** 2 + (center_y - y) ** 2
+        return dist < radius**2
 
     def set_collision(self, collid: bool):
         self.collision = collid
