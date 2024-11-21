@@ -3,7 +3,6 @@ import sys
 import pygame
 
 from controller import Controller
-import algo
 import assets
 import background as bg
 import entities
@@ -30,6 +29,7 @@ def main():
 
             time += 1
 
+            # XXX stop game and announce winner when one is left
             # if controller.getLives() == 0:
             #     game_over = True
             #     controller.reset()
@@ -115,16 +115,16 @@ if __name__ == "__main__":
     spawn_points = iter([(250, 250), (650, 120), (250, 450), (650, 450)])
 
     # XXX dynamic loading
+    from sample_bots import Random, Basic
 
-    a = algo.RandomAlgo()
-    controller.add_bot(
-        entities.Bot(
-            algo=a,
+    controller.add_tank(
+        entities.Tank(
+            bot=Random(),
             pos=next(spawn_points),
             screen=screen,
-            img_path=assets.ENEMY_TANK,
+            img_path=assets.PLAYER_TANK,
             controller=controller,
-            colour=a.colour(),
+            colour=Random().colour(),  # XXX
             speed=0,
             fire_speed=0.6,
             fire_delay=1000,
@@ -132,15 +132,14 @@ if __name__ == "__main__":
         )
     )
 
-    a = algo.HeadlightsAlgo()
-    controller.add_bot(
-        entities.Bot(
-            algo=a,
+    controller.add_tank(
+        entities.Tank(
+            bot=Basic(),
             pos=next(spawn_points),
             screen=screen,
             img_path=assets.ENEMY_TANK,
             controller=controller,
-            colour=a.colour(),
+            colour=Basic().colour(),  # XXX
             speed=0,
             fire_speed=0.6,
             fire_delay=1000,
@@ -148,15 +147,14 @@ if __name__ == "__main__":
         )
     )
 
-    a = algo.HeadlightsAlgo()
-    controller.add_bot(
-        entities.Bot(
-            algo=a,
+    controller.add_tank(
+        entities.Tank(
+            bot=Basic(),
             pos=next(spawn_points),
             screen=screen,
             img_path=assets.ENEMY_TANK,
             controller=controller,
-            colour=a.colour(),
+            colour=Basic().colour(),
             speed=0,
             fire_speed=0.5,
             fire_delay=1000,

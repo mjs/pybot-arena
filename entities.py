@@ -4,14 +4,14 @@ import pygame
 
 import assets
 from typing import Tuple
-from algo import Algo, CurrentState, NearbyBot, SetAngle, SetSpeed, Fire
+from bot import Bot, CurrentState, NearbyBot, SetAngle, SetSpeed, Fire
 
 
-class Bot:
+class Tank:
 
     def __init__(
         self,
-        algo: Algo,
+        bot: Bot,
         img_path: str,
         screen,
         pos,
@@ -23,7 +23,7 @@ class Bot:
         fire_speed=0.5,
         detection_radius: float = 200,
     ):
-        self.algo = algo
+        self.bot = bot
         self.screen = screen
         self.pos_x, self.pos_y = pos
         self.speed = speed
@@ -34,9 +34,10 @@ class Bot:
         self.controller = controller
         self.detection_radius = detection_radius
 
+        # Load image and apply colour
+        # XXX try gray scaling it first
         # XXX remove the word tank
         self.tank_image = pygame.image.load(img_path).convert_alpha()
-        print(self.tank_image.get_size())
         mask = pygame.Surface(self.tank_image.get_size()).convert_alpha()
         mask.fill(colour)
         self.tank_image.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
@@ -92,7 +93,7 @@ class Bot:
     def pos(self) -> Tuple[float, float]:
         return self._rect[:2]
 
-    def update(self, other_bots: list["Bot"]):
+    def update(self, others: list["Bot"]):
         state = CurrentState(
             ticks=pygame.time.get_ticks(),
             x=self.pos_x,
@@ -102,20 +103,20 @@ class Bot:
             collision=self.collision,
             nearby=[
                 NearbyBot(
-                    name=other.algo.name(),
+                    name=other.bot.name(),  # XXX should come from other directly
                     x=other.pos_x,
                     y=other.pos_y,
                     relative_angle=self._calc_angle(other.center()),
                     speed=other.speed,
                     angle=other.angle,
                 )
-                for other in other_bots
+                for other in others
                 if self.in_circle(other.pos_x, other.pos_y, self.detection_radius)
             ],
         )
         self.collision = False
 
-        action = self.algo.next(state)
+        action = self.bot.next(state)
 
         typ = type(action)
         if typ is SetSpeed:
