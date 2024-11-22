@@ -1,0 +1,2 @@
+- Report nearby walls to allow for smarter avoidance
+- Energy / fuel to prevent constant speed

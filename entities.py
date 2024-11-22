@@ -130,6 +130,7 @@ class Tank:
         )
         self.collision = False
 
+        # XXX kill the tank if this raises an exception
         action = self.bot.next(state)
 
         typ = type(action)
