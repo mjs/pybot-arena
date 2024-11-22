@@ -20,7 +20,7 @@ class Tank:
         controller,
         fire_speed=0.6,
         fire_radius: int = 150,
-        fire_delay: int = 1000,
+        reload_delay: int = 1000,
         visibility: float = 250,
     ):
         self.bot = bot
@@ -30,8 +30,8 @@ class Tank:
         self.speed = 0
         self.angle = 0
         self.fire_speed = fire_speed
-        self.fire_delay = fire_delay
-        self.time_counter = fire_delay
+        self.reload_delay = reload_delay
+        self.reload_counter = reload_delay
         self.controller = controller
         self.visibility = visibility
 
@@ -102,6 +102,7 @@ class Tank:
             speed=self.speed,
             angle=self.angle,
             collision=self.collision,
+            can_fire=not self._fired,
             nearby_bots=[
                 bot.NearbyBot(
                     name=other.name,
@@ -110,7 +111,7 @@ class Tank:
                     distance=dist(self.center, other.center),
                     speed=other.speed,
                     angle=other.angle,
-                    relative_angle=self._calc_angle(other.center),
+                    relative_angle=norm_angle(self._calc_angle(other.center)),
                 )
                 for other in others
                 if self.in_circle(other.pos_x, other.pos_y, self.visibility)
@@ -120,7 +121,7 @@ class Tank:
                     x=bullet.pos_x,
                     y=bullet.pos_y,
                     distance=dist(self.center, bullet.center),
-                    relative_angle=self._calc_angle(bullet.center),
+                    relative_angle=norm_angle(self._calc_angle(bullet.center)),
                     angle=bullet.angle,
                 )
                 for bullet in self.controller.bullets
@@ -139,9 +140,7 @@ class Tank:
             self.speed = max(self.speed, -0.5)
         elif typ is bot.SetAngle:
             # XXX limit allowed angle change
-            self.angle = action.angle
-            self.angle = min(self.angle, 360)
-            self.angle = max(self.angle, 0)
+            self.angle = norm_angle(action.angle)
         elif typ is bot.Fire:
             self.fire()
 
@@ -156,11 +155,10 @@ class Tank:
         self._rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
         self.screen.blit(self.transformed_image, self._rect)
 
-        # XXX tidy
-        if self.time_counter > 0:
-            self.time_counter -= 1
+        if self.reload_counter > 0:
+            self.reload_counter -= 1
         else:
-            self.time_counter = self.fire_delay
+            self.reload_counter = self.reload_delay
             self._fired = False
 
     def colliderect(self, rect):
@@ -177,6 +175,14 @@ def dist(pos1, pos2):
     x1, y1 = pos1
     x2, y2 = pos2
     return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
+
+
+def norm_angle(angle):
+    while angle >= 360:
+        angle -= 360
+    while angle < 0:
+        angle += 360
+    return angle
 
 
 class Bullet:

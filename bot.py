@@ -30,10 +30,10 @@ class CurrentState:
     y: float
     speed: float
     angle: float
-    # XXX fire_delay time or is_reloading bool
     collision: bool
     nearby_bots: list[NearbyBot]
     nearby_bullets: list[NearbyBullet]
+    can_fire: bool
 
 
 class Action:

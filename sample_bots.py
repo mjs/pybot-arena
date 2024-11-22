@@ -45,7 +45,7 @@ class Basic(Bot):
             if state.speed != 0.1:
                 return SetSpeed(0.1)
             first = state.nearby_bots[0]
-            if abs(state.angle - first.relative_angle) < 1:
+            if state.can_fire and abs(state.angle - first.relative_angle) < 2:
                 return Fire()
             return SetAngle(first.relative_angle)
 
