@@ -131,21 +131,21 @@ if __name__ == "__main__":
     backg_wall4.set_pos(bg_rect.width - rect.width, bg_rect.height - rect.height)
     wall_coll4 = backg_wall4.get_collision_object()
 
-    backg_wall5 = bg.BackgroundWall(assets.BACKGROUND_WALL5, screen, split=split)
-    backg_wall5.set_pos(400, 400)
-    wall_coll5 = backg_wall5.get_collision_object()
+    # backg_wall5 = bg.BackgroundWall(assets.BACKGROUND_WALL5, screen, split=split)
+    # backg_wall5.set_pos(400, 400)
+    # wall_coll5 = backg_wall5.get_collision_object()
 
-    backg_wall6 = bg.BackgroundWall(assets.BACKGROUND_WALL6, screen, split=split)
-    backg_wall6.set_pos(500, 150)
-    wall_coll6 = backg_wall6.get_collision_object()
+    # backg_wall6 = bg.BackgroundWall(assets.BACKGROUND_WALL6, screen, split=split)
+    # backg_wall6.set_pos(500, 150)
+    # wall_coll6 = backg_wall6.get_collision_object()
 
     for wall in [
         (backg_wall, wall_coll1),
         (backg_wall2, wall_coll2),
         (backg_wall3, wall_coll3),
         (backg_wall4, wall_coll4),
-        (backg_wall5, wall_coll5),
-        (backg_wall6, wall_coll6),
+        # (backg_wall5, wall_coll5),
+        # (backg_wall6, wall_coll6),
     ]:
         controller.add_obstacle(*wall)
 
