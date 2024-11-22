@@ -25,9 +25,6 @@ class BackgroundWall:
         self.img = pygame.image.load(img).convert_alpha()
         self.x, self.y = pos
         self.screen = screen
-
-        self._collision = False
-
         self.collision = Collision(
             img, split, wall_collision=True, wall_padding=(1, 1, 1, 1)
         )
