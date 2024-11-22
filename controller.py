@@ -67,7 +67,6 @@ class Controller:
 
             if collid_count > 0:
                 tank.reset_previous_pos()
-                tank.speed = 0
                 tank.set_collision(True)
 
         for bullet in self.bullets.copy():
