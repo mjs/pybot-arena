@@ -12,34 +12,35 @@ class Tank:
     def __init__(
         self,
         bot: Bot,
+        name: str,
+        color: pygame.Color,
         img_path: str,
         screen,
         pos,
         controller,
-        colour,
-        speed: float = 0.5,
-        fire_radius: int = 250,
-        fire_delay: int = 500,
-        fire_speed=0.5,
-        detection_radius: float = 200,
+        fire_speed=0.6,
+        fire_radius: int = 150,
+        fire_delay: int = 1000,
+        visibility: float = 200,
     ):
         self.bot = bot
+        self.name = name
         self.screen = screen
         self.pos_x, self.pos_y = pos
-        self.speed = speed
+        self.speed = 0
         self.angle = 0
         self.fire_speed = fire_speed
         self.fire_delay = fire_delay
         self.time_counter = fire_delay
         self.controller = controller
-        self.detection_radius = detection_radius
+        self.visibility = visibility
 
-        # Load image and apply colour
+        # Load image and apply color
         # XXX try gray scaling it first
         # XXX remove the word tank
         self.tank_image = pygame.image.load(img_path).convert_alpha()
         mask = pygame.Surface(self.tank_image.get_size()).convert_alpha()
-        mask.fill(colour)
+        mask.fill(color)
         self.tank_image.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
         self.transformed_image = self.tank_image
@@ -93,7 +94,7 @@ class Tank:
     def pos(self) -> Tuple[float, float]:
         return self._rect[:2]
 
-    def update(self, others: list["Bot"]):
+    def update(self, others: list["Tank"]):
         state = CurrentState(
             ticks=pygame.time.get_ticks(),
             x=self.pos_x,
@@ -103,7 +104,7 @@ class Tank:
             collision=self.collision,
             nearby=[
                 NearbyBot(
-                    name=other.bot.name(),  # XXX should come from other directly
+                    name=other.name,
                     x=other.pos_x,
                     y=other.pos_y,
                     relative_angle=self._calc_angle(other.center()),
@@ -111,7 +112,7 @@ class Tank:
                     angle=other.angle,
                 )
                 for other in others
-                if self.in_circle(other.pos_x, other.pos_y, self.detection_radius)
+                if self.in_circle(other.pos_x, other.pos_y, self.visibility)
             ],
         )
         self.collision = False

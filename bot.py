@@ -50,16 +50,16 @@ class Fire(Action):
 
 class Bot:
 
-    def name(self) -> str:
+    def default_name(self) -> str:
         raise NotImplementedError
 
-    def colour(self):
-        return pygame.Color(255, 255, 255, 255)
+    def default_color(self) -> str:
+        return "white"
 
     def next(self, state: CurrentState) -> Action | None:
         raise NotImplementedError
 
 
 # XXX color per bot
-# XXX ensure unique names
+# XXX show n
 # XXX fuel?

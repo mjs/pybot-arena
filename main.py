@@ -1,11 +1,16 @@
+import importlib
 import sys
+from dataclasses import dataclass
 
 import pygame
 
+from bot import Bot
 from controller import Controller
 import assets
 import background as bg
 import entities
+
+SPAWN_POINTS = [(200, 200), (650, 120), (250, 450), (650, 450), (500, 350)]
 
 
 def main():
@@ -56,8 +61,40 @@ def main():
         pygame.display.update()
 
 
-# #XXX returns algo func, name, colour
-# def process_args(args):
+@dataclass
+class TankSpec:
+    bot: Bot
+    name: str
+    color_name: str
+
+
+def parse_tank_specs(args: list[str]) -> list[TankSpec]:
+    """Parse the tank details from the command line.
+
+    Each arg takes the form: <package.BotClass>[,name,[color]]
+    """
+    specs = []
+    for arg in args:
+        parts = iter(arg.split(","))
+        bot = load_bot(next(parts))
+        name = bot.default_name()
+        color_name = bot.default_color()
+
+        try:
+            name = next(parts)
+            color_name = next(parts)
+        except StopIteration:
+            pass
+
+        specs.append(TankSpec(bot, name, color_name))
+    return specs
+
+
+def load_bot(source) -> "Bot":
+    module_name, bot_name = source.rsplit(".", -1)
+    mod = importlib.import_module(module_name)
+    cls = getattr(mod, bot_name)
+    return cls()
 
 
 if __name__ == "__main__":
@@ -112,56 +149,28 @@ if __name__ == "__main__":
     ]:
         controller.add_obstacle(*wall)
 
-    spawn_points = iter([(250, 250), (650, 120), (250, 450), (650, 450)])
+    # XXX try for grayscale bots which color more easily
 
-    # XXX dynamic loading
-    from sample_bots import Random, Basic
+    spawn_points = iter(SPAWN_POINTS)
 
-    controller.add_tank(
-        entities.Tank(
-            bot=Random(),
-            pos=next(spawn_points),
-            screen=screen,
-            img_path=assets.PLAYER_TANK,
-            controller=controller,
-            colour=Random().colour(),  # XXX
-            speed=0,
-            fire_speed=0.6,
-            fire_delay=1000,
-            fire_radius=150,
+    specs = parse_tank_specs(sys.argv[1:])
+    # XXX ensure unique names
+    # XXX exit with error if number of bots exceeds spawn points
+    for spec in specs:
+        controller.add_tank(
+            entities.Tank(
+                bot=spec.bot,
+                name=spec.name,
+                color=pygame.Color(spec.color_name),
+                pos=next(spawn_points),
+                screen=screen,
+                img_path=assets.PLAYER_TANK,
+                controller=controller,
+            )
         )
-    )
-
-    controller.add_tank(
-        entities.Tank(
-            bot=Basic(),
-            pos=next(spawn_points),
-            screen=screen,
-            img_path=assets.ENEMY_TANK,
-            controller=controller,
-            colour=Basic().colour(),  # XXX
-            speed=0,
-            fire_speed=0.6,
-            fire_delay=1000,
-            fire_radius=150,
-        )
-    )
-
-    controller.add_tank(
-        entities.Tank(
-            bot=Basic(),
-            pos=next(spawn_points),
-            screen=screen,
-            img_path=assets.ENEMY_TANK,
-            controller=controller,
-            colour=Basic().colour(),
-            speed=0,
-            fire_speed=0.5,
-            fire_delay=1000,
-            fire_radius=150,
-        )
-    )
 
     game_over_font = pygame.font.SysFont("Times", 50, True)
     score_font = pygame.font.SysFont("Consolas", 30)
+
+    # XXX show the tank names and their colors around the edges
     main()

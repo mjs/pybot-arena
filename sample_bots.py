@@ -1,17 +1,15 @@
 import random
 
-import pygame
-
 from bot import Bot, CurrentState, Action, SetSpeed, SetAngle, Fire
 
 
 class Random(Bot):
 
-    def name(self):
+    def default_name(self):
         return "random"
 
-    def colour(self):
-        return pygame.Color(255, 255, 255, 255)
+    def default_color(self):
+        return "palegreen"
 
     def next(self, state: CurrentState) -> Action | None:
         if state.collision:
@@ -30,13 +28,11 @@ class Basic(Bot):
             SetSpeed(0.5),
         ]
 
-    # XXX maybe should be set on command line with this being the default
-    def name(self):
-        return "test"
+    def default_name(self):
+        return "basic"
 
-    # XXX maybe should be set on command line or randomly assigned
-    def colour(self):
-        return pygame.Color(255, 255, 255, 255)
+    def default_color(self):
+        return "firebrick"
 
     def next(self, state: CurrentState) -> Action | None:
         if state.collision:
