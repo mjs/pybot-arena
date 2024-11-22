@@ -1,5 +1,3 @@
-import random
-import pygame
 from dataclasses import dataclass
 
 
@@ -19,6 +17,7 @@ class NearbyBullet:
     x: float
     y: float
     distance: float
+    speed: float
     angle: float
     relative_angle: float
 

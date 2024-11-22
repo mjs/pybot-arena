@@ -119,6 +119,7 @@ class Tank:
                     x=bullet.pos_x,
                     y=bullet.pos_y,
                     distance=dist(self.center, bullet.center),
+                    speed=bullet.speed,
                     relative_angle=norm_angle(self._calc_angle(bullet.center)),
                     angle=bullet.angle,
                 )
@@ -195,6 +196,8 @@ class Bullet:
         fire_radius: int,
         speed: float = 0.5,
     ):
+        self.angle = angle
+        self.speed = speed
         self.screen = screen
         self._destroyed = False
         self.bullet_image = pygame.image.load(assets.BULLET).convert_alpha()
@@ -208,7 +211,6 @@ class Bullet:
         rect = self.transformed_img.get_rect()
         self.current_pos = initial_pos[0] - rect.centerx, initial_pos[1] - rect.centery
 
-        self.angle = angle
         self.transformed_img = pygame.transform.rotate(self.bullet_image, angle)
 
     @property
