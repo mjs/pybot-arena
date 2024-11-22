@@ -8,10 +8,19 @@ class NearbyBot:
     name: str
     x: float
     y: float
-    # XXX distance
-    relative_angle: float
+    distance: float
     speed: float
     angle: float
+    relative_angle: float
+
+
+@dataclass
+class NearbyBullet:
+    x: float
+    y: float
+    distance: float
+    angle: float
+    relative_angle: float
 
 
 @dataclass
@@ -22,10 +31,9 @@ class CurrentState:
     speed: float
     angle: float
     # XXX fire_delay time or is_reloading bool
-    collision: bool  # XXX maybe don't keep this
+    collision: bool
     nearby_bots: list[NearbyBot]
-    # XXX also report nearby bullets to allow avoidance
-    # XXX also report nearby walls to allow for smarter avoidance?
+    nearby_bullets: list[NearbyBullet]
 
 
 class Action:
@@ -57,7 +65,3 @@ class Bot:
 
     def next(self, state: CurrentState) -> Action | None:
         raise NotImplementedError
-
-
-# XXX show n
-# XXX fuel?

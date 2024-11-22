@@ -1,17 +1,17 @@
 import math
+from typing import Tuple
 
 import pygame
 
 import assets
-from typing import Tuple
-from bot import Bot, CurrentState, NearbyBot, SetAngle, SetSpeed, Fire
+import bot
 
 
 class Tank:
 
     def __init__(
         self,
-        bot: Bot,
+        bot: bot.Bot,
         name: str,
         color: pygame.Color,
         img_path: str,
@@ -21,7 +21,7 @@ class Tank:
         fire_speed=0.6,
         fire_radius: int = 150,
         fire_delay: int = 1000,
-        visibility: float = 200,
+        visibility: float = 250,
     ):
         self.bot = bot
         self.name = name
@@ -51,12 +51,13 @@ class Tank:
         self._fired = False
         self.collision = False
 
+    @property
     def center(self) -> Tuple[int, int]:
         return self.tank_image.get_rect(center=(self.pos_x, self.pos_y)).center
 
     def _calc_adj_hyp(self, pos):
         mouse_x, mouse_y = pos
-        center_x, center_y = self.center()
+        center_x, center_y = self.center
 
         adj = mouse_x - center_x
         opp = mouse_y - center_y
@@ -94,7 +95,7 @@ class Tank:
         return self._rect[:2]
 
     def update(self, others: list["Tank"]):
-        state = CurrentState(
+        state = bot.CurrentState(
             ticks=pygame.time.get_ticks(),
             x=self.pos_x,
             y=self.pos_y,
@@ -102,16 +103,29 @@ class Tank:
             angle=self.angle,
             collision=self.collision,
             nearby_bots=[
-                NearbyBot(
+                bot.NearbyBot(
                     name=other.name,
                     x=other.pos_x,
                     y=other.pos_y,
-                    relative_angle=self._calc_angle(other.center()),
+                    distance=dist(self.center, other.center),
                     speed=other.speed,
                     angle=other.angle,
+                    relative_angle=self._calc_angle(other.center),
                 )
                 for other in others
                 if self.in_circle(other.pos_x, other.pos_y, self.visibility)
+            ],
+            nearby_bullets=[
+                bot.NearbyBullet(
+                    x=bullet.pos_x,
+                    y=bullet.pos_y,
+                    distance=dist(self.center, bullet.center),
+                    relative_angle=self._calc_angle(bullet.center),
+                    angle=bullet.angle,
+                )
+                for bullet in self.controller.bullets
+                if bullet.owner != self
+                and self.in_circle(bullet.pos_x, bullet.pos_y, self.visibility)
             ],
         )
         self.collision = False
@@ -119,16 +133,16 @@ class Tank:
         action = self.bot.next(state)
 
         typ = type(action)
-        if typ is SetSpeed:
+        if typ is bot.SetSpeed:
             self.speed = action.speed
             self.speed = min(self.speed, 0.5)
             self.speed = max(self.speed, -0.5)
-        elif typ is SetAngle:
+        elif typ is bot.SetAngle:
             # XXX limit allowed angle change
             self.angle = action.angle
             self.angle = min(self.angle, 360)
             self.angle = max(self.angle, 0)
-        elif typ is Fire:
+        elif typ is bot.Fire:
             self.fire()
 
         direction_x = math.cos(math.radians(self.angle + 90)) * self.speed
@@ -153,12 +167,16 @@ class Tank:
         return self.get_rect_object().colliderect(rect)
 
     def in_circle(self, x, y, radius):
-        center_x, center_y = self.center()
-        dist = (center_x - x) ** 2 + (center_y - y) ** 2
-        return dist < radius**2
+        return dist(self.center, (x, y)) < radius
 
     def set_collision(self, collid: bool):
         self.collision = collid
+
+
+def dist(pos1, pos2):
+    x1, y1 = pos1
+    x2, y2 = pos2
+    return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
 
 
 class Bullet:
@@ -186,7 +204,20 @@ class Bullet:
         rect = self.transformed_img.get_rect()
         self.current_pos = initial_pos[0] - rect.centerx, initial_pos[1] - rect.centery
 
+        self.angle = angle
         self.transformed_img = pygame.transform.rotate(self.bullet_image, angle)
+
+    @property
+    def pos_x(self):
+        return self.current_pos[0]
+
+    @property
+    def pos_y(self):
+        return self.current_pos[1]
+
+    @property
+    def center(self):
+        return self.current_pos
 
     def update(self):
         self.current_pos = (

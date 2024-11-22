@@ -26,7 +26,7 @@ class Controller:
             math.sin(math.radians(tank.angle - 90)),
         )
         bullet = Bullet(
-            self.screen, tank, normal, tank.center(), tank.angle, radius, speed
+            self.screen, tank, normal, tank.center, tank.angle, radius, speed
         )
         self.bullets.add(bullet)
 
