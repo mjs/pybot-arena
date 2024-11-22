@@ -6,7 +6,6 @@ from dataclasses import dataclass
 @dataclass
 class NearbyBot:
     name: str
-    # XXX maybe don't need these
     x: float
     y: float
     # XXX distance
@@ -22,9 +21,9 @@ class CurrentState:
     y: float
     speed: float
     angle: float
-    # XXX fire_delay time
+    # XXX fire_delay time or is_reloading bool
     collision: bool  # XXX maybe don't keep this
-    nearby: list[NearbyBot]
+    nearby_bots: list[NearbyBot]
     # XXX also report nearby bullets to allow avoidance
     # XXX also report nearby walls to allow for smarter avoidance?
 
@@ -60,6 +59,5 @@ class Bot:
         raise NotImplementedError
 
 
-# XXX color per bot
 # XXX show n
 # XXX fuel?

@@ -37,7 +37,6 @@ class Tank:
 
         # Load image and apply color
         # XXX try gray scaling it first
-        # XXX remove the word tank
         self.tank_image = pygame.image.load(img_path).convert_alpha()
         mask = pygame.Surface(self.tank_image.get_size()).convert_alpha()
         mask.fill(color)
@@ -102,7 +101,7 @@ class Tank:
             speed=self.speed,
             angle=self.angle,
             collision=self.collision,
-            nearby=[
+            nearby_bots=[
                 NearbyBot(
                     name=other.name,
                     x=other.pos_x,
