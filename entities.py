@@ -80,9 +80,7 @@ class Tank:
             self.controller.create_bullet(self, self.fire_radius, self.fire_speed)
 
     def get_bbox(self):
-        # XXX
-        # rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
-        rect = self.tank_image.get_rect(center=(self.pos_x, self.pos_y))
+        rect = self.transformed_image.get_rect(center=(self.pos_x, self.pos_y))
         return rect[0], rect[1], rect[0] + rect[2], rect[1] + rect[3]
 
     def get_rect_object(self):
