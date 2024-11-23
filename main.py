@@ -149,8 +149,6 @@ if __name__ == "__main__":
     ]:
         controller.add_obstacle(*wall)
 
-    # XXX try for grayscale bots which color more easily
-
     spawn_points = iter(SPAWN_POINTS)
 
     specs = parse_tank_specs(sys.argv[1:])
@@ -164,7 +162,7 @@ if __name__ == "__main__":
                 color=pygame.Color(spec.color_name),
                 pos=next(spawn_points),
                 screen=screen,
-                img_path=assets.PLAYER_TANK,
+                img_path=assets.WHITE_TANK,
                 controller=controller,
             )
         )

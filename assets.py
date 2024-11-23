@@ -7,8 +7,6 @@ BACKGROUND_WALL5 = r"assets/Background/background-wall5.png"
 BACKGROUND_WALL6 = r"assets/Background/background-wall6.png"
 BUSH = r"assets/Background/Bush.png"
 
-LIFE = r"assets/life.png"
-
+WHITE_TANK = r"assets/whiteTank.png"
 PLAYER_TANK = r"assets/playerTank.png"
-ENEMY_TANK = r"assets/enemyTank.png"
 BULLET = r"assets/Bullet.png"

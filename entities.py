@@ -36,11 +36,10 @@ class Tank:
         self.visibility = visibility
 
         # Load image and apply color
-        # XXX try gray scaling it first
         self.tank_image = pygame.image.load(img_path).convert_alpha()
         mask = pygame.Surface(self.tank_image.get_size()).convert_alpha()
         mask.fill(color)
-        self.tank_image.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        self.tank_image.blit(mask, (0, 0), special_flags=pygame.BLEND_MULT)
 
         self.transformed_image = self.tank_image
         self._rect = self.tank_image.get_rect()
