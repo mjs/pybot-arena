@@ -1,15 +1,24 @@
-# Hunter2
+# PyBot Arena
 
-Based on Hunter1 but without scrolling background.
+In this game, players implement an algorithm to control a tank in Python, and
+then compete them against each other. A number of tanks can be active in a
+single match at the same time.
 
-Game play:
+The game borrows code and assets from
+[PaulleDemon/Hunter2](https://github.com/PaulleDemon/Hunter2) but has been
+heavily modified.
 
-![hunter2](https://user-images.githubusercontent.com/64060109/130266753-3e2c8e98-44ce-4281-8a45-2701a14cac96.gif)
+## Installation
 
+XXX
 
+## Running a Match
 
-**The Hit boxes were created using [pycollision](https://pypi.org/project/PyCollision)**
+XXX
 
-![hitboxes-hunter2](https://user-images.githubusercontent.com/64060109/130266748-6cbe3486-d79a-4ab6-9249-a527ce4edf98.gif)
+## Creating a Bot
+
+XXX
+
 
 
