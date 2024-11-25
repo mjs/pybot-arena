@@ -38,7 +38,6 @@ def main():
 
             time += 1
 
-            # XXX stop game and announce winner when one is left
             # if controller.getLives() == 0:
             #     game_over = True
             #     controller.reset()

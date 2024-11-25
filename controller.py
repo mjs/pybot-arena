@@ -1,6 +1,10 @@
 import math
+import structlog
 
 from entities import Bullet
+
+
+log = structlog.get_logger()
 
 
 class Controller:
@@ -72,7 +76,7 @@ class Controller:
         for bullet in self.bullets.copy():
             for tank in self.tanks.copy():
                 if tank.colliderect(bullet.get_rect()) and bullet.owner is not tank:
-                    # XXX who killed who, eventually on screen
+                    log.info("Tank destroyed", name=tank.name, by=bullet.owner.name)
                     self.tanks.remove(tank)
                     self.bullets.remove(bullet)
                     break
