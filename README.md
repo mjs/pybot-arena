@@ -5,7 +5,7 @@ an autonomous tank in Python. The Bots from different players then compete them
 against each other. A number of bots can be active in a single match at the
 same time.
 
-XXX screenshot
+<img src="screenshot.png">
 
 The game borrows code and assets from
 [PaulleDemon/Hunter2](https://github.com/PaulleDemon/Hunter2) but has been
@@ -87,10 +87,10 @@ Good luck!
 
 ### Tips
 
-- CurrentState includes a `collision` flag which indicates that the tank has
-  just run into something. It can be useful to change direction when this
-  happens.
-- The `relative_angle` field of NearbyBot instances is useful for targeting
+- The `CurrentState` instance that is passed for every `next` call includes a
+  `collision` flag which indicates that the tank has just run into something.
+  It can be useful to change direction when this happens.
+- The `relative_angle` field of `NearbyBot` instances is useful for targeting
   other tanks.
-- The list of `nearby_bullets` is handy for taking evasive action.
+- The list of `nearby_bullets` is handy for taking evasive action!
 
