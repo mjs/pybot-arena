@@ -2,9 +2,13 @@ import math
 from typing import Tuple
 
 import pygame
+import structlog
 
 import assets
 import bot
+
+
+log = structlog.get_logger()
 
 
 class Tank:
@@ -129,8 +133,11 @@ class Tank:
         )
         self.collision = False
 
-        # XXX kill the tank if this raises an exception
-        action = self.bot.next(state)
+        try:
+            action = self.bot.next(state)
+        except:
+            log.error("bot failed", name=self.name, exc_info=True)
+            return
 
         typ = type(action)
         if typ is bot.SetSpeed:
