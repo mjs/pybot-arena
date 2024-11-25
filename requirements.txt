@@ -22,3 +22,5 @@ pycollision==0.0.2
     # via -r requirements.in
 pygame==2.6.1
     # via -r requirements.in
+structlog==24.4.0
+    # via -r requirements.in

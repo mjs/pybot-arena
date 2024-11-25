@@ -73,7 +73,6 @@ class Controller:
             for tank in self.tanks.copy():
                 if tank.colliderect(bullet.get_rect()) and bullet.owner is not tank:
                     # XXX who killed who, eventually on screen
-                    # XXX explosions
                     self.tanks.remove(tank)
                     self.bullets.remove(bullet)
                     break

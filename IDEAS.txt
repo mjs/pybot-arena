@@ -1,4 +1,5 @@
 - Explosions 
 - Reduce tank bounding boxes or make them fit the shape properly (pygame masks for collision detection?)
+- Show the tank names and their colors around the edges
 - Report nearby walls to allow for smarter avoidance
 - Energy / fuel to prevent constant speed

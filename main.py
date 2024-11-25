@@ -1,4 +1,5 @@
 import importlib
+import structlog
 import sys
 from dataclasses import dataclass
 
@@ -9,6 +10,9 @@ from controller import Controller
 import assets
 import background as bg
 import entities
+
+log = structlog.get_logger()
+
 
 SPAWN_POINTS = [(200, 200), (650, 120), (250, 450), (650, 450), (500, 350)]
 
@@ -30,7 +34,7 @@ def main():
                 running = False
 
         if not game_over:
-            key_press = pygame.key.get_pressed()
+            # key_press = pygame.key.get_pressed()
 
             time += 1
 
@@ -43,7 +47,7 @@ def main():
         controller.update()
 
         time_rect = screen.blit(
-            score_font.render(f"{time}", True, (255, 255, 255)),
+            time_font.render(f"{time}", True, (255, 255, 255)),
             (screen.get_width() - time_rect.width - 100, 20),
         )
 
@@ -98,6 +102,8 @@ def load_bot(source) -> "Bot":
 
 
 if __name__ == "__main__":
+    log.info("Starting")
+
     pygame.init()
     pygame.display.set_caption("Tank Game")
     pygame.display.set_icon(pygame.image.load(assets.PLAYER_TANK))
@@ -152,9 +158,25 @@ if __name__ == "__main__":
     spawn_points = iter(SPAWN_POINTS)
 
     specs = parse_tank_specs(sys.argv[1:])
-    # XXX ensure unique names
-    # XXX exit with error if number of bots exceeds spawn points
+
+    if len(specs) > len(SPAWN_POINTS):
+        log.error("Too many bots", requested=len(specs), limit=len(SPAWN_POINTS))
+        sys.exit(1)
+
+    seen_names = set()
     for spec in specs:
+        if spec.name in seen_names:
+            log.error("Duplicate tank name, please fix", name=spec.name)
+            sys.exit(1)
+        seen_names.add(spec.name)
+
+    for spec in specs:
+        log.info(
+            "Adding tank",
+            name=spec.name,
+            bot=spec.bot.__class__.__name__,
+            color=spec.color_name,
+        )
         controller.add_tank(
             entities.Tank(
                 bot=spec.bot,
@@ -167,8 +189,6 @@ if __name__ == "__main__":
             )
         )
 
-    game_over_font = pygame.font.SysFont("Times", 50, True)
-    score_font = pygame.font.SysFont("Consolas", 30)
+    time_font = pygame.font.Font(None, size=32)
 
-    # XXX show the tank names and their colors around the edges
     main()
