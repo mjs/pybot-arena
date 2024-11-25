@@ -2,4 +2,5 @@
 - Reduce tank bounding boxes or make them fit the shape properly (pygame masks for collision detection?)
 - Show the tank names and their colors around the edges
 - Report nearby walls to allow for smarter avoidance
+- Limit allowed movement per turn?
 - Energy / fuel to prevent constant speed
