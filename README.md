@@ -45,21 +45,21 @@ There are some simple bot implementations in the `sample_bots.py` module.
 To run a match with one Random and one Basic bot:
 
 ```
-python sample_bots.Random sample_bots.Basic
+python main.py sample_bots.Random sample_bots.Basic
 ```
 
 Bots have a default name which can be overridden on the command line. For
 example, to give the Basic bot a name of "foo":
 
 ```
-python sample_bots.Random sample_bots.Basic,foo
+python main.py sample_bots.Random sample_bots.Basic,foo
 ```
 
 Bots also have a default color which can be overridden on the command line. For
 example, to give the Basic bot a name of "foo" and force it to be yellow:
 
 ```
-python sample_bots.Random sample_bots.Basic,foo,yellow
+python main.py sample_bots.Random sample_bots.Basic,foo,yellow
 ```
 
 Any [PyGame color][3] name can be used for a tank color.

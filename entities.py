@@ -145,7 +145,6 @@ class Tank:
             self.speed = min(self.speed, 0.5)
             self.speed = max(self.speed, -0.5)
         elif typ is bot.SetAngle:
-            # XXX limit allowed angle change
             self.angle = norm_angle(action.angle)
         elif typ is bot.Fire:
             self.fire()
