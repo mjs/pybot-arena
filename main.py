@@ -23,9 +23,12 @@ def main():
     time = 0
     game_over = False
 
+    clock = pygame.time.Clock()
     time_rect = pygame.Rect(50, 50, 100, 100)
 
     while running:
+        clock.tick(240)
+
         screen.fill((0, 0, 0))
 
         for event in pygame.event.get():
