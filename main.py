@@ -1,6 +1,7 @@
 import importlib
 import structlog
 import sys
+import random
 from dataclasses import dataclass
 
 import pygame
@@ -14,7 +15,7 @@ import entities
 log = structlog.get_logger()
 
 
-SPAWN_POINTS = [(200, 200), (650, 120), (250, 450), (650, 450), (500, 350)]
+SPAWN_POINTS = [(200, 200), (650, 120), (250, 500), (700, 500), (500, 350)]
 
 
 def main():
@@ -160,6 +161,7 @@ if __name__ == "__main__":
     spawn_points = iter(SPAWN_POINTS)
 
     specs = parse_tank_specs(sys.argv[1:])
+    random.shuffle(specs)
 
     if len(specs) > len(SPAWN_POINTS):
         log.error("Too many bots", requested=len(specs), limit=len(SPAWN_POINTS))
