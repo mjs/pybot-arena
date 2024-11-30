@@ -40,26 +40,26 @@ PyBot Arena needs to be told where to find the implementations for the bots
 which control each tank, and which to play against each other for a particular
 game. This is specified on the command line.
 
-There are some simple bot implementations in the `sample_bots.py` module.
+There are some simple bot implementations in the `bots.sample.py` module.
 
 To run a match with one Random and one Basic bot:
 
 ```
-python main.py sample_bots.Random sample_bots.Basic
+python main.py bots.sample.Random bots.sample.Basic
 ```
 
 Bots have a default name which can be overridden on the command line. For
 example, to give the Basic bot a name of "foo":
 
 ```
-python main.py sample_bots.Random sample_bots.Basic,foo
+python main.py bots.sample.Random bots.sample.Basic,foo
 ```
 
 Bots also have a default color which can be overridden on the command line. For
 example, to give the Basic bot a name of "foo" and force it to be yellow:
 
 ```
-python main.py sample_bots.Random sample_bots.Basic,foo,yellow
+python main.py bots.sample.Random bots.sample.Basic,foo,yellow
 ```
 
 Any [PyGame color][3] name can be used for a tank color.
@@ -75,15 +75,20 @@ the `default_name`, `default_color` and `next` method.
 The game engine will repeatedly call the `next` method of each Bot to progress
 the match. The `state` argument to `next` provides relevant details
 about the tank's position, angle and speed as well as details about other
-nearby tanks and bullets(!). 
+nearby tanks and bullets(!).
 
 Each call to `next` should return an `Action` instance (see `bots.py`) to
 change the tank's speed or angle, or to fire a bullet. None should be returned
 if the tank should continue doing what it's already doing.
 
-See `bots.py` and `sample_bots.py` for further details and inspiration.
+See `bot.py` and the various examples in the `bots` directory for further
+details and inspiration. Many thanks to the folks at the [Python NZ Christchurch meetup][1]
+for the bots they created during the [November 2024][2] meetup.
 
 Good luck!
+
+[1]: https://www.meetup.com/pythonnz-christchurch/
+[2]: https://www.meetup.com/pythonnz-christchurch/events/304445354/
 
 ### Tips
 
