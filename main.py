@@ -33,7 +33,6 @@ def main():
         screen.fill((0, 0, 0))
 
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 running = False
 
@@ -98,7 +97,7 @@ def parse_tank_specs(args: list[str]) -> list[TankSpec]:
 
 
 def load_bot(source) -> "Bot":
-    module_name, bot_name = source.rsplit(".", -1)
+    module_name, bot_name = source.rsplit(".", 1)
     mod = importlib.import_module(module_name)
     cls = getattr(mod, bot_name)
     return cls()
